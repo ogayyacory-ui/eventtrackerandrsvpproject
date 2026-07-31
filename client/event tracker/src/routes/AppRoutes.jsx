@@ -8,24 +8,81 @@ import EventDetails from "../pages/EventDetails";
 import MyRSVPs from "../pages/MyRSVPs";
 import Dashboard from "../pages/Dashboard";
 import CreateEvent from "../pages/CreateEvent";
+import EditEvent from "../pages/EditEvent";
 import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 
-const AppRoutes = () => {
+import ProtectedRoute from "../components/ProtectedRoute";
+
+function AppRoutes() {
   return (
     <Routes>
+
+      {/* Public */}
+
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+
       <Route path="/events" element={<Events />} />
+
       <Route path="/events/:id" element={<EventDetails />} />
-      <Route path="/my-rsvps" element={<MyRSVPs />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/create-event" element={<CreateEvent />} />
-      <Route path="/profile" element={<Profile />} />
+
+      <Route path="/login" element={<Login />} />
+
+      <Route path="/register" element={<Register />} />
+
+      {/* Student */}
+
+      <Route
+        path="/my-rsvps"
+        element={
+          <ProtectedRoute>
+            <MyRSVPs />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Organizer */}
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute role="organizer">
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/create-event"
+        element={
+          <ProtectedRoute role="organizer">
+            <CreateEvent />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/edit-event/:id"
+        element={
+          <ProtectedRoute role="organizer">
+            <EditEvent />
+          </ProtectedRoute>
+        }
+      />
+
       <Route path="*" element={<NotFound />} />
+
     </Routes>
   );
-};
+}
 
 export default AppRoutes;
