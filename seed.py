@@ -13,7 +13,7 @@ with app.app_context():
     print("Clearing tables...")
     RSVP.query.delete()
     Event.query.delete()
-    db.session.execute(Tag.query.delete())
+    Tag.query.delete()
     OrganizerProfile.query.delete()
     User.query.delete()
 
