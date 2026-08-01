@@ -1,12 +1,9 @@
 function Loader() {
   return (
     <div
-      className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: "60vh" }}
+      style={{ minHeight: "60vh", display: "grid", placeItems: "center", color: "#176b87", fontWeight: 700 }}
     >
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
+      <div role="status">Loading events…</div>
     </div>
   );
 }

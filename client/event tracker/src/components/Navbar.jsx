@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
@@ -5,94 +6,97 @@ function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container">
-
-        <Link className="navbar-brand fw-bold" to="/">
+    <nav style={{ background: "#102a43", boxShadow: "0 2px 14px rgba(16,42,67,.16)" }}>
+      <div
+        style={{
+          width: "min(1120px, calc(100% - 32px))",
+          minHeight: 68,
+          margin: "0 auto",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 24,
+          flexWrap: "wrap",
+        }}
+      >
+        <Link
+          style={{
+            color: "#fff",
+            fontWeight: 800,
+            fontSize: "1.08rem",
+            letterSpacing: "-.03em",
+            textDecoration: "none",
+          }}
+          to="/"
+        >
           Campus Event Tracker
         </Link>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbar"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+          <Link style={navLink} to="/">
+            Home
+          </Link>
+          <Link style={navLink} to="/events">
+            Events
+          </Link>
 
-        <div className="collapse navbar-collapse" id="navbar">
-
-          <ul className="navbar-nav ms-auto">
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Home
+          {user && (
+            <>
+              <Link style={navLink} to="/my-rsvps">
+                My RSVPs
               </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/events">
-                Events
+              <Link style={navLink} to="/profile">
+                Profile
               </Link>
-            </li>
+            </>
+          )}
 
-            {user && (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/my-rsvps">
-                    My RSVPs
-                  </Link>
-                </li>
+          {user?.role === "organizer" && (
+            <Link style={navLink} to="/dashboard">
+              Dashboard
+            </Link>
+          )}
 
-                <li className="nav-item">
-                  <Link className="nav-link" to="/profile">
-                    Profile
-                  </Link>
-                </li>
-              </>
-            )}
-
-            {user?.role === "organizer" && (
-              <li className="nav-item">
-                <Link className="nav-link" to="/dashboard">
-                  Dashboard
-                </Link>
-              </li>
-            )}
-
-            {!user ? (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/login">
-                    Login
-                  </Link>
-                </li>
-
-                <li className="nav-item">
-                  <Link className="nav-link" to="/register">
-                    Register
-                  </Link>
-                </li>
-              </>
-            ) : (
-              <li className="nav-item">
-                <button
-                  className="btn btn-outline-light ms-2"
-                  onClick={logout}
-                >
-                  Logout
-                </button>
-              </li>
-            )}
-
-          </ul>
-
+          {!user ? (
+            <>
+              <Link style={navLink} to="/login">
+                Login
+              </Link>
+              <Link
+                style={{ ...navLink, background: "#2f855a", color: "#fff" }}
+                to="/register"
+              >
+                Register
+              </Link>
+            </>
+          ) : (
+            <button
+              style={{
+                border: "1px solid #93b6c9",
+                borderRadius: 8,
+                background: "transparent",
+                color: "#fff",
+                padding: "8px 12px",
+                cursor: "pointer",
+              }}
+              onClick={logout}
+            >
+              Logout
+            </button>
+          )}
         </div>
-
       </div>
     </nav>
   );
 }
+
+const navLink = {
+  color: "#d9e6ee",
+  textDecoration: "none",
+  padding: "8px 10px",
+  borderRadius: 8,
+  fontSize: ".93rem",
+  fontWeight: 600,
+};
 
 export default Navbar;
