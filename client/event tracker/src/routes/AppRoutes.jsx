@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
+// Pages
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -9,37 +10,31 @@ import MyRSVPs from "../pages/MyRSVPs";
 import Dashboard from "../pages/Dashboard";
 import CreateEvent from "../pages/CreateEvent";
 import EditEvent from "../pages/EditEvent";
+import ManageEvents from "../pages/ManageEvents";
+import Analytics from "../pages/Analytics";
 import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 
+// Protected Route
 import ProtectedRoute from "../components/ProtectedRoute";
 
 function AppRoutes() {
   return (
     <Routes>
 
-      {/* Public */}
+      {/* ===================== PUBLIC ROUTES ===================== */}
 
       <Route path="/" element={<Home />} />
-
-      <Route path="/events" element={<Events />} />
-
-      <Route path="/events/:id" element={<EventDetails />} />
 
       <Route path="/login" element={<Login />} />
 
       <Route path="/register" element={<Register />} />
 
-      {/* Student */}
+      <Route path="/events" element={<Events />} />
 
-      <Route
-        path="/my-rsvps"
-        element={
-          <ProtectedRoute>
-            <MyRSVPs />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/events/:id" element={<EventDetails />} />
+
+      {/* ===================== AUTHENTICATED USERS ===================== */}
 
       <Route
         path="/profile"
@@ -50,7 +45,16 @@ function AppRoutes() {
         }
       />
 
-      {/* Organizer */}
+      <Route
+        path="/my-rsvps"
+        element={
+          <ProtectedRoute>
+            <MyRSVPs />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ===================== ORGANIZER ROUTES ===================== */}
 
       <Route
         path="/dashboard"
@@ -78,6 +82,26 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/manage-events"
+        element={
+          <ProtectedRoute role="organizer">
+            <ManageEvents />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute role="organizer">
+            <Analytics />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ===================== 404 PAGE ===================== */}
 
       <Route path="*" element={<NotFound />} />
 
