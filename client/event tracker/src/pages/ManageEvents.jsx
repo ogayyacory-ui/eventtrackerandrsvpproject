@@ -19,7 +19,8 @@ function ManageEvents() {
   };
 
   useEffect(() => {
-    loadEvents();
+    const timer = setTimeout(loadEvents, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleDelete = async (id) => {
@@ -28,7 +29,7 @@ function ManageEvents() {
     try {
       await deleteEvent(id);
       loadEvents();
-    } catch (error) {
+    } catch {
       alert("Unable to delete event.");
     }
   };

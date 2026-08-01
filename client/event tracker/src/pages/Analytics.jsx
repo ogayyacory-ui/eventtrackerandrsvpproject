@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaCalendarAlt, FaUsers, FaCheckCircle, FaChartBar } from "react-icons/fa";
-import api from "../services/api";
 import Loader from "../components/Loader";
+import api from "../services/api";
 
 function Analytics() {
   const [analytics, setAnalytics] = useState({
@@ -15,24 +15,11 @@ function Analytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAnalytics();
+    api.get("/analytics")
+      .then(setAnalytics)
+      .catch((error) => console.error("Analytics Error:", error))
+      .finally(() => setLoading(false));
   }, []);
-
-  const fetchAnalytics = async () => {
-    try {
-      // Backend endpoint:
-      // GET /api/analytics
-
-      const response = await api.get("/analytics");
-
-      setAnalytics(response.data);
-
-    } catch (error) {
-      console.error("Analytics Error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return <Loader />;
 

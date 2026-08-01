@@ -1,7 +1,6 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import * as authService from "../services/authService";
-
-export const AuthContext = createContext();
+import { AuthContext } from "./authContext";
 
 export function AuthProvider({ children }) {
 
@@ -22,7 +21,7 @@ export function AuthProvider({ children }) {
 
             try {
 
-                const profile = await authService.getProfile();
+                const profile = await authService.getCurrentUser();
 
                 setUser(profile);
 

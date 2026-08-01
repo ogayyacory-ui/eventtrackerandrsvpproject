@@ -1,25 +1,19 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getEvents } from "../services/eventService";
-
-export const EventContext = createContext();
+import { EventContext } from "./eventContext";
 
 export function EventProvider({ children }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchEvents = async () => {
-    try {
-      const data = await getEvents();
-      setEvents(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchEvents = () => getEvents()
+    .then(setEvents)
+    .catch(console.error)
+    .finally(() => setLoading(false));
 
   useEffect(() => {
-    fetchEvents();
+    const timer = setTimeout(fetchEvents, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   return (

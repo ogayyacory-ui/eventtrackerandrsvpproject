@@ -8,19 +8,11 @@ function MyRSVPs() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadRSVPs();
+    getMyRSVPs()
+      .then(setEvents)
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
-
-  const loadRSVPs = async () => {
-    try {
-      const data = await getMyRSVPs();
-      setEvents(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return <Loader />;
 

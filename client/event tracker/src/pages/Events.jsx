@@ -8,19 +8,11 @@ function Events() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchEvents();
+    getEvents()
+      .then(setEvents)
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
-
-  const fetchEvents = async () => {
-    try {
-      const data = await getEvents();
-      setEvents(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return <Loader />;
 

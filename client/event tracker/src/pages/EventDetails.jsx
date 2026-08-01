@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
-import RSVPButton from "../components/RSVPButton";
+import RSVPButton from "../components/RsvpButton";
 import { getEvent } from "../services/eventService";
 
 function EventDetails() {
@@ -11,19 +11,11 @@ function EventDetails() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadEvent();
-  }, []);
-
-  const loadEvent = async () => {
-    try {
-      const data = await getEvent(id);
-      setEvent(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    getEvent(id)
+      .then(setEvent)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [id]);
 
   if (loading) return <Loader />;
 
