@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { register } from "../services/authService";
 
 function Register() {
   const navigate = useNavigate();
-  
-  // Safely extract register, signup, or registerUser from useAuth()
-  const auth = useAuth() || {};
-  const registerFn = auth.register || auth.signup || auth.registerUser;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -40,37 +36,16 @@ function Register() {
     }
 
     try {
-      // Option A: Use Auth Context Function if available
-      if (typeof registerFn === "function") {
-        await registerFn(formData);
-      } else {
-        // Option B: Direct fetch call targeting Flask backend (Port 5555)
-        const response = await fetch("http://127.0.0.1:5555/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-            role: formData.role,
-          }),
-        });
+      await register({
+        username: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.message || data.error || "Registration failed.");
-        }
-      }
-
-      // Redirect to home page upon successful registration
       navigate("/");
     } catch (err) {
-      setError(
-        err.response?.data?.message || err.message || "Registration failed."
-      );
+      setError(err.message || "Registration failed.");
     }
   };
 

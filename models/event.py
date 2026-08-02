@@ -11,6 +11,7 @@ class Event(db.Model):
     category = db.Column(db.String(50), nullable=False)
     location = db.Column(db.String(150), nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
+    image = db.Column(db.String(255), nullable=True)
     event_date = db.Column(db.DateTime, nullable=False)
     organizer_id = db.Column(db.Integer, db.ForeignKey('organizer_profiles.id'), nullable=False)
 

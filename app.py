@@ -26,9 +26,18 @@ def create_app(config_name=None):
     if config_name is None:
         config_name = os.getenv("FLASK_ENV", "development")
 
-    app = Flask(__name__)
-    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+    app = Flask(__name__, instance_relative_config=True)
+    app.config['CORS_HEADERS'] = 'Content-Type'
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": ["http://localhost:5173", "http://127.0.0.1:5173"]}},
+        allow_headers=["Content-Type", "Authorization"],
+        expose_headers=["Content-Type", "Authorization"],
+        methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        supports_credentials=True
+    )
+    db_path = os.path.join(app.instance_path, 'app.db')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
 
@@ -85,6 +94,13 @@ def create_app(config_name=None):
 
         return jsonify({'error': 'Invalid email or password'}), 401
 
+    @app.route('/api/auth/me', methods=['GET'])
+    @jwt_required()
+    def me():
+        current_user_id = get_jwt_identity()
+        user = User.query.get_or_404(current_user_id)
+        return jsonify(user_schema.dump(user)), 200
+
     # =========================================================================
     # 2. EVENT ROUTES
     # =========================================================================
@@ -126,13 +142,20 @@ def create_app(config_name=None):
             return jsonify({'error': 'Forbidden: Organizer privileges required'}), 403
 
         data = request.get_json() or {}
+        event_date_value = None
+        if data.get('event_date'):
+            event_date_value = datetime.fromisoformat(data['event_date'])
+        elif data.get('date') and data.get('time'):
+            event_date_value = datetime.fromisoformat(f"{data['date']}T{data['time']}")
+
         new_event = Event(
             title=data['title'],
             description=data['description'],
             category=data['category'],
             location=data['location'],
             capacity=data['capacity'],
-            event_date=datetime.fromisoformat(data['event_date']),
+            image=data.get('image'),
+            event_date=event_date_value,
             organizer_id=user.organizer_profile.id
         )
 
@@ -164,7 +187,9 @@ def create_app(config_name=None):
         for key, val in data.items():
             if key == 'event_date':
                 setattr(event, key, datetime.fromisoformat(val))
-            elif hasattr(event, key) and key != 'tag_ids':
+            elif key == 'date' and data.get('time'):
+                setattr(event, 'event_date', datetime.fromisoformat(f"{val}T{data['time']}"))
+            elif hasattr(event, key) and key not in ('tag_ids', 'date', 'time'):
                 setattr(event, key, val)
 
         if 'tag_ids' in data:

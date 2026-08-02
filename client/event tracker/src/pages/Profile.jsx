@@ -3,6 +3,8 @@ import useAuth from "../hooks/useAuth";
 function Profile() {
 
   const { user } = useAuth();
+  const displayName = user?.username || user?.name || "Unknown";
+  const displayEmail = user?.email || "Not available";
 
   return (
 
@@ -16,9 +18,9 @@ function Profile() {
 
           <hr />
 
-          <p><strong>Name:</strong> {user?.name}</p>
+          <p><strong>Name:</strong> {displayName}</p>
 
-          <p><strong>Email:</strong> {user?.email}</p>
+          <p><strong>Email:</strong> {displayEmail}</p>
 
           <p><strong>Role:</strong> {user?.role}</p>
 

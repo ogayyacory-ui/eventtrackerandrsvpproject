@@ -29,7 +29,12 @@ function Login() {
       await login(credentials);
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed.");
+      console.error("Login failed:", err);
+      setError(
+        err.message?.includes("Network error")
+          ? "Unable to reach the backend server. Please make sure the Flask API is running on http://127.0.0.1:5555."
+          : err.message || "Login failed."
+      );
     }
   };
 

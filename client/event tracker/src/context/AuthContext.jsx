@@ -45,9 +45,10 @@ export function AuthProvider({ children }) {
 
         const data = await authService.login(credentials);
 
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.access_token);
 
-        setUser(data.user);
+        const profile = await authService.getCurrentUser();
+        setUser(profile);
     };
 
     const logout = () => {
