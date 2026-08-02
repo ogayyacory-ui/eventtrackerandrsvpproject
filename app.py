@@ -1,10 +1,9 @@
-# app.py
 import os
 from datetime import datetime
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
-
+from flask_cors import CORS
 from extensions import db, jwt, migrate, cors, ma
 
 # Models
@@ -28,7 +27,7 @@ def create_app(config_name=None):
         config_name = os.getenv("FLASK_ENV", "development")
 
     app = Flask(__name__)
-
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'

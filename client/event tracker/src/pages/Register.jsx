@@ -4,7 +4,10 @@ import useAuth from "../hooks/useAuth";
 
 function Register() {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  
+  // Safely extract register, signup, or registerUser from useAuth()
+  const auth = useAuth() || {};
+  const registerFn = auth.register || auth.signup || auth.registerUser;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +32,7 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // Reset previous errors
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
@@ -36,10 +40,37 @@ function Register() {
     }
 
     try {
-      await register(formData);
+      // Option A: Use Auth Context Function if available
+      if (typeof registerFn === "function") {
+        await registerFn(formData);
+      } else {
+        // Option B: Direct fetch call targeting Flask backend (Port 5555)
+        const response = await fetch("http://127.0.0.1:5555/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            role: formData.role,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || data.error || "Registration failed.");
+        }
+      }
+
+      // Redirect to home page upon successful registration
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed.");
+      setError(
+        err.response?.data?.message || err.message || "Registration failed."
+      );
     }
   };
 
@@ -244,7 +275,7 @@ const styles = {
   },
   inputWithToggle: {
     width: "100%",
-    padding: "10px 55px 10px 14px", // Extra padding on right to leave room for button
+    padding: "10px 55px 10px 14px",
     fontSize: "0.95rem",
     borderRadius: "8px",
     border: "1px solid #d1d5db",
