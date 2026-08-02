@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { createEvent } from "../services/eventService";
 
 function CreateEvent() {
-
   const navigate = useNavigate();
 
-  const [event, setEvent] = useState({
+  const [form, setForm] = useState({
     title: "",
     description: "",
     category: "",
@@ -14,131 +13,79 @@ function CreateEvent() {
     date: "",
     time: "",
     capacity: "",
-    image: ""
+    image: "",
   });
 
   const handleChange = (e) => {
-
-    setEvent({
-      ...event,
-      [e.target.name]: e.target.value
-    });
-
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-
     try {
-
-      await createEvent(event);
-
-      alert("Event created successfully!");
-
+      await createEvent(form);
+      alert("Event created successfully");
       navigate("/dashboard");
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert("Failed to create event.");
-
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Failed to create event");
     }
-
   };
 
   return (
+    <main className="simple-page">
+      <h1>Create Event</h1>
 
-    <div className="container">
+      <form className="event-form" onSubmit={handleSubmit}>
+        <label>
+          Title
+          <input name="title" value={form.title} onChange={handleChange} required />
+        </label>
 
-      <div className="card shadow">
+        <label className="wide">
+          Description
+          <textarea name="description" value={form.description} onChange={handleChange} rows={4} required />
+        </label>
 
-        <div className="card-body">
+        <label>
+          Category
+          <input name="category" value={form.category} onChange={handleChange} />
+        </label>
 
-          <h2>Create Event</h2>
+        <label>
+          Venue
+          <input name="location" value={form.location} onChange={handleChange} />
+        </label>
 
-          <form onSubmit={handleSubmit}>
+        <label>
+          Date
+          <input type="date" name="date" value={form.date} onChange={handleChange} required />
+        </label>
 
-            <input
-              className="form-control mb-3"
-              placeholder="Event Title"
-              name="title"
-              onChange={handleChange}
-              required
-            />
+        <label>
+          Time
+          <input type="time" name="time" value={form.time} onChange={handleChange} required />
+        </label>
 
-            <textarea
-              className="form-control mb-3"
-              placeholder="Description"
-              rows="4"
-              name="description"
-              onChange={handleChange}
-              required
-            />
+        <label>
+          Capacity
+          <input type="number" name="capacity" value={form.capacity} onChange={handleChange} />
+        </label>
 
-            <input
-              className="form-control mb-3"
-              placeholder="Category"
-              name="category"
-              onChange={handleChange}
-              required
-            />
+        <label>
+          Image URL
+          <input name="image" value={form.image} onChange={handleChange} />
+        </label>
 
-            <input
-              className="form-control mb-3"
-              placeholder="Venue"
-              name="location"
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              className="form-control mb-3"
-              type="date"
-              name="date"
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              className="form-control mb-3"
-              type="time"
-              name="time"
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              className="form-control mb-3"
-              type="number"
-              placeholder="Capacity"
-              name="capacity"
-              onChange={handleChange}
-              required
-            />
-
-            <input
-              className="form-control mb-4"
-              placeholder="Image URL"
-              name="image"
-              onChange={handleChange}
-            />
-
-            <button className="btn btn-success w-100">
-              Create Event
-            </button>
-
-          </form>
-
+        <div className="wide">
+          <button type="submit" className="primary-button">
+            Create Event
+          </button>
         </div>
-
-      </div>
-
-    </div>
-
+      </form>
+    </main>
   );
-
 }
 
 export default CreateEvent;

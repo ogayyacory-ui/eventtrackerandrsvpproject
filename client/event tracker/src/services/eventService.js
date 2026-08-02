@@ -15,7 +15,7 @@ export const createEvent = async (eventData) => {
 };
 
 export const updateEvent = async (id, eventData) => {
-  return api.put(`/api/events/${id}`, eventData);
+  return api.patch(`/api/events/${id}`, eventData);
 };
 
 export const deleteEvent = async (id) => {

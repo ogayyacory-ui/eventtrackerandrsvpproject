@@ -20,6 +20,20 @@ def admin_required():
         return decorator
     return wrapper
 
+
+def organizer_or_admin_required():
+    def wrapper(fn):
+        @wraps(fn)
+        @jwt_required()
+        def decorator(*args, **kwargs):
+            user_id = get_jwt_identity()
+            user = User.query.get(user_id)
+            if not user or user.role not in ('organizer', 'admin'):
+                return {'error': 'Forbidden: Organizer or Admin privilege required'}, 403
+            return fn(*args, **kwargs)
+        return decorator
+    return wrapper
+
 class RegisterResource(Resource):
     def post(self):
         data = request.get_json() or {}
@@ -35,7 +49,7 @@ class RegisterResource(Resource):
         db.session.add(user)
         db.session.commit()
 
-        if user.role == 'admin':
+        if user.role in ('admin', 'organizer'):
             profile = OrganizerProfile(
                 user_id=user.id,
                 organization_name=data.get('organization_name', 'Student Union'),
@@ -52,7 +66,7 @@ class LoginResource(Resource):
         user = User.query.filter_by(email=data.get('email')).first()
 
         if user and user.check_password(data.get('password', '')):
-            token = create_access_token(identity=user.id)
+            token = create_access_token(identity=str(user.id))
             return {
                 'access_token': token,
                 'user': {'id': user.id, 'username': user.username, 'role': user.role}

@@ -29,66 +29,41 @@ function EditEvent() {
       ...event,
       [e.target.name]: e.target.value
     });
+    <main className="simple-page">
+      <h1>Edit Event</h1>
 
-  };
+      <form className="event-form" onSubmit={handleSubmit}>
+        <label>
+          Title
+          <input name="title" value={event.title || ""} onChange={handleChange} />
+        </label>
 
-  const handleSubmit = async (e) => {
+        <label className="wide">
+          Description
+          <textarea name="description" rows={4} value={event.description || ""} onChange={handleChange} />
+        </label>
 
-    e.preventDefault();
+        <label>
+          Venue
+          <input name="location" value={event.location || ""} onChange={handleChange} />
+        </label>
 
-    await updateEvent(id, event);
+        <label>
+          Date
+          <input type="date" name="date" value={event.date || ""} onChange={handleChange} />
+        </label>
 
-    navigate("/manage-events");
+        <label>
+          Time
+          <input type="time" name="time" value={event.time || ""} onChange={handleChange} />
+        </label>
 
-  };
-
-  return (
-
-    <div className="container">
-
-      <div className="card shadow">
-
-        <div className="card-body">
-
-          <h2>Edit Event</h2>
-
-          <form onSubmit={handleSubmit}>
-
-            <input
-              className="form-control mb-3"
-              name="title"
-              value={event.title || ""}
-              onChange={handleChange}
-            />
-
-            <textarea
-              className="form-control mb-3"
-              rows="4"
-              name="description"
-              value={event.description || ""}
-              onChange={handleChange}
-            />
-
-            <input
-              className="form-control mb-3"
-              name="location"
-              value={event.location || ""}
-              onChange={handleChange}
-            />
-
-            <input
-              className="form-control mb-3"
-              type="date"
-              name="date"
-              value={event.date || ""}
-              onChange={handleChange}
-            />
-
-            <input
-              className="form-control mb-4"
-              type="time"
-              name="time"
-              value={event.time || ""}
+        <div className="wide">
+          <button type="submit" className="primary-button">
+            Update Event
+          </button>
+        </div>
+      </form>
               onChange={handleChange}
             />
 

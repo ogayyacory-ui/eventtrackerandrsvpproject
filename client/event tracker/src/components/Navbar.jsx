@@ -51,10 +51,16 @@ function Navbar() {
             </>
           )}
 
-          {user?.role === "organizer" && (
+          {(user?.role === "organizer" || user?.role === "admin") && (
             <Link style={navLink} to="/dashboard">
               Dashboard
             </Link>
+          )}
+
+          {user && (
+            <span style={userLabel}>
+              {user.username} ({user.role})
+            </span>
           )}
 
           {!user ? (
@@ -97,6 +103,15 @@ const navLink = {
   borderRadius: 8,
   fontSize: ".93rem",
   fontWeight: 600,
+};
+
+const userLabel = {
+  color: "#a8d0ff",
+  fontWeight: 600,
+  fontSize: ".91rem",
+  padding: "8px 10px",
+  borderRadius: 8,
+  border: "1px solid rgba(255,255,255,0.18)",
 };
 
 export default Navbar;

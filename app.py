@@ -68,8 +68,8 @@ def create_app(config_name=None):
         db.session.add(user)
         db.session.commit()
 
-        # If admin, auto-create an organizer profile
-        if user.role == 'admin':
+        # If organizer or admin, auto-create an organizer profile
+        if user.role in ('admin', 'organizer'):
             profile = OrganizerProfile(
                 user_id=user.id,
                 organization_name=data.get('organization_name', 'Student Union'),
@@ -86,7 +86,7 @@ def create_app(config_name=None):
         user = User.query.filter_by(email=data.get('email')).first()
 
         if user and user.check_password(data.get('password', '')):
-            token = create_access_token(identity=user.id)
+            token = create_access_token(identity=str(user.id))
             return jsonify({
                 'access_token': token,
                 'user': {'id': user.id, 'username': user.username, 'role': user.role}
@@ -138,8 +138,20 @@ def create_app(config_name=None):
         current_user_id = get_jwt_identity()
         user = User.query.get(current_user_id)
 
-        if not user or user.role != 'admin' or not user.organizer_profile:
-            return jsonify({'error': 'Forbidden: Organizer privileges required'}), 403
+        if not user or user.role not in ('organizer', 'admin'):
+            return jsonify({'error': 'Forbidden: Organizer or Admin privilege required'}), 403
+
+        data = request.get_json(silent=True) or {}
+
+        # Ensure organizer profile exists; create one from provided data if missing
+        if not user.organizer_profile:
+            profile = OrganizerProfile(
+                user_id=user.id,
+                organization_name=data.get('organization_name', 'Organization'),
+                department=data.get('department', 'General')
+            )
+            db.session.add(profile)
+            db.session.commit()
 
         data = request.get_json() or {}
         event_date_value = None
@@ -225,7 +237,7 @@ def create_app(config_name=None):
         if RSVP.query.filter_by(user_id=current_user_id, event_id=event_id).first():
             return jsonify({'error': 'RSVP already submitted for this event'}), 400
 
-        data = request.get_json() or {}
+        data = request.get_json(silent=True) or {}
         new_rsvp = RSVP(
             user_id=current_user_id,
             event_id=event_id,
@@ -235,6 +247,19 @@ def create_app(config_name=None):
         db.session.add(new_rsvp)
         db.session.commit()
         return jsonify(rsvp_schema.dump(new_rsvp)), 201
+
+    @app.route('/api/events/<int:event_id>/rsvp', methods=['DELETE'])
+    @jwt_required()
+    def cancel_rsvp(event_id):
+        current_user_id = get_jwt_identity()
+        rsvp = RSVP.query.filter_by(user_id=current_user_id, event_id=event_id).first()
+
+        if not rsvp:
+            return jsonify({'error': 'RSVP not found'}), 404
+
+        db.session.delete(rsvp)
+        db.session.commit()
+        return jsonify({'message': 'RSVP cancelled successfully'}), 200
 
     @app.route('/api/users/me/rsvps', methods=['GET'])
     @jwt_required()

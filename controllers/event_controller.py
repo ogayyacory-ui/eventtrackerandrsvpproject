@@ -37,15 +37,22 @@ class EventListResource(Resource):
             'items': events_schema.dump(paginated.items)
         }, 200
 
-    @admin_required()
+    @organizer_or_admin_required()
     def post(self):
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
-        
-        if not user.organizer_profile:
-            return {'error': 'Organizer profile required to create events'}, 400
 
-        data = request.get_json() or {}
+        data = request.get_json(silent=True) or {}
+
+        # ensure organizer profile exists; create one from provided data if missing
+        if not user.organizer_profile:
+            profile = OrganizerProfile(
+                user_id=user.id,
+                organization_name=data.get('organization_name', 'Organization'),
+                department=data.get('department', 'General')
+            )
+            db.session.add(profile)
+            db.session.commit()
         event = Event(
             title=data['title'],
             description=data['description'],

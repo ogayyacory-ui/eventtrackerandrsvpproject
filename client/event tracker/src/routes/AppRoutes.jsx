@@ -59,7 +59,7 @@ function AppRoutes() {
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute role="organizer">
+          <ProtectedRoute role={["organizer", "admin"]}>
             <Dashboard />
           </ProtectedRoute>
         }
@@ -68,7 +68,7 @@ function AppRoutes() {
       <Route
         path="/create-event"
         element={
-          <ProtectedRoute role="organizer">
+          <ProtectedRoute role={["organizer", "admin"]}>
             <CreateEvent />
           </ProtectedRoute>
         }
@@ -77,7 +77,7 @@ function AppRoutes() {
       <Route
         path="/edit-event/:id"
         element={
-          <ProtectedRoute role="organizer">
+          <ProtectedRoute role={["organizer", "admin"]}>
             <EditEvent />
           </ProtectedRoute>
         }
@@ -86,7 +86,7 @@ function AppRoutes() {
       <Route
         path="/manage-events"
         element={
-          <ProtectedRoute role="organizer">
+          <ProtectedRoute role={["organizer", "admin"]}>
             <ManageEvents />
           </ProtectedRoute>
         }
@@ -95,7 +95,7 @@ function AppRoutes() {
       <Route
         path="/analytics"
         element={
-          <ProtectedRoute role="organizer">
+          <ProtectedRoute role={["organizer", "admin"]}>
             <Analytics />
           </ProtectedRoute>
         }

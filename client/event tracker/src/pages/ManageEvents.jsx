@@ -37,59 +37,32 @@ function ManageEvents() {
   if (loading) return <Loader />;
 
   return (
-    <div className="container">
-      <div className="d-flex justify-content-between mb-4">
-        <h2>Manage Events</h2>
-
-        <Link className="btn btn-primary" to="/create-event">
-          New Event
-        </Link>
+    <main className="simple-page">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <h1>Manage Events</h1>
+        <Link className="primary-button" to="/create-event">New Event</Link>
       </div>
 
-      <table className="table table-bordered table-hover">
+      <div style={{ display: 'grid', gap: 12 }}>
+        {events.map((event) => (
+          <div key={event.id} className="rsvp-row" style={{ alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <strong>{event.title}</strong>
+              <small style={{ color: '#748481' }}>{event.date} • {event.location}</small>
+            </div>
 
-        <thead className="table-dark">
-          <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Venue</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-
-          {events.map((event) => (
-            <tr key={event.id}>
-              <td>{event.title}</td>
-              <td>{event.date}</td>
-              <td>{event.location}</td>
-
-              <td>
-
-                <Link
-                  to={`/edit-event/${event.id}`}
-                  className="btn btn-warning btn-sm me-2"
-                >
-                  Edit
-                </Link>
-
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDelete(event.id)}
-                >
-                  Delete
-                </button>
-
-              </td>
-
-            </tr>
-          ))}
-
-        </tbody>
-
-      </table>
-    </div>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+              <Link to={`/edit-event/${event.id}`} className="primary-button" style={{ background: '#ffc107', color: '#172b2a' }}>
+                Edit
+              </Link>
+              <button className="primary-button" style={{ background: '#dc3545' }} onClick={() => handleDelete(event.id)}>
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
   );
 }
 
