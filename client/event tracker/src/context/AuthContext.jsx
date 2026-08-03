@@ -1,77 +1,62 @@
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import * as authService from "../services/authService";
-import { AuthContext } from "./authContext";
+
+export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
+  const [user, setUser] =useState(null);
+  const [loading, setLoading] = useState(true);
 
-    const [user, setUser] = useState(null);
+  useEffect(() => {
+    async function loadUser() {
+      const token = localStorage.getItem("token");
 
-    const [loading, setLoading] = useState(true);
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
-    useEffect(() => {
-
-        const loadUser = async () => {
-
-            const token = localStorage.getItem("token");
-
-            if (!token) {
-                setLoading(false);
-                return;
-            }
-
-            try {
-
-                const profile = await authService.getCurrentUser();
-
-                setUser(profile);
-
-            } catch {
-
-                localStorage.removeItem("token");
-
-            } finally {
-
-                setLoading(false);
-
-            }
-
-        };
-
-        loadUser();
-
-    }, []);
-
-    const login = async (credentials) => {
-
-        const data = await authService.login(credentials);
-
-        localStorage.setItem("token", data.access_token);
-
+      try {
         const profile = await authService.getCurrentUser();
         setUser(profile);
-    };
-
-    const logout = () => {
+      } catch (error) {
+        console.error("Authentication Error:", error);
 
         localStorage.removeItem("token");
-
         setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    };
+    loadUser();
+  }, []);
 
-    return (
+  const login = async (credentials) => {
+    const data = await authService.login(credentials);
 
-        <AuthContext.Provider
-            value={{
-                user,
-                login,
-                logout,
-                loading,
-            }}
-        >
-            {children}
-        </AuthContext.Provider>
+    localStorage.setItem("token", data.access_token);
 
-    );
+    const profile = await authService.getCurrentUser();
 
+    setUser(profile);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }

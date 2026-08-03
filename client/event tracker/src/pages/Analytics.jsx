@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { FaCalendarAlt, FaUsers, FaCheckCircle, FaChartBar } from "react-icons/fa";
+import {
+  FaCalendarAlt,
+  FaUsers,
+  FaCheckCircle,
+  FaChartBar,
+} from "react-icons/fa";
 import Loader from "../components/Loader";
 import api from "../services/api";
 
@@ -15,150 +20,201 @@ function Analytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/analytics")
-      .then(setAnalytics)
-      .catch((error) => console.error("Analytics Error:", error))
-      .finally(() => setLoading(false));
+    async function loadAnalytics() {
+      try {
+        const response = await api.get("/analytics");
+
+        setAnalytics(response.data);
+      } catch (error) {
+        console.error("Analytics Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAnalytics();
   }, []);
 
   if (loading) return <Loader />;
 
   return (
-    <div className="container">
-
-      <h2 className="mb-4">
+    <main
+      style={{
+        maxWidth: "1400px",
+        margin: "40px auto",
+        padding: "20px",
+      }}
+    >
+      <h1
+        style={{
+          marginBottom: "35px",
+          textAlign: "center",
+          color: "#1e293b",
+        }}
+      >
         Event Analytics Dashboard
-      </h2>
+      </h1>
 
-      <div className="row">
+      {/* Statistics */}
 
-        <div className="col-md-3 mb-4">
-          <div className="card shadow text-center">
-            <div className="card-body">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
+          gap: "25px",
+          marginBottom: "45px",
+        }}
+      >
+        <StatCard
+          title="Total Events"
+          value={analytics.totalEvents}
+          icon={<FaCalendarAlt size={32} />}
+          color="#2563eb"
+        />
 
-              <FaCalendarAlt
-                size={45}
-                className="text-primary mb-3"
-              />
+        <StatCard
+          title="Total RSVPs"
+          value={analytics.totalRSVPs}
+          icon={<FaUsers size={32} />}
+          color="#16a34a"
+        />
 
-              <h5>Total Events</h5>
+        <StatCard
+          title="Upcoming Events"
+          value={analytics.upcomingEvents}
+          icon={<FaChartBar size={32} />}
+          color="#f59e0b"
+        />
 
-              <h2>{analytics.totalEvents}</h2>
-
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-3 mb-4">
-          <div className="card shadow text-center">
-            <div className="card-body">
-
-              <FaUsers
-                size={45}
-                className="text-success mb-3"
-              />
-
-              <h5>Total RSVPs</h5>
-
-              <h2>{analytics.totalRSVPs}</h2>
-
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-3 mb-4">
-          <div className="card shadow text-center">
-            <div className="card-body">
-
-              <FaChartBar
-                size={45}
-                className="text-warning mb-3"
-              />
-
-              <h5>Upcoming Events</h5>
-
-              <h2>{analytics.upcomingEvents}</h2>
-
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-3 mb-4">
-          <div className="card shadow text-center">
-            <div className="card-body">
-
-              <FaCheckCircle
-                size={45}
-                className="text-danger mb-3"
-              />
-
-              <h5>Completed Events</h5>
-
-              <h2>{analytics.completedEvents}</h2>
-
-            </div>
-          </div>
-        </div>
-
+        <StatCard
+          title="Completed Events"
+          value={analytics.completedEvents}
+          icon={<FaCheckCircle size={32} />}
+          color="#dc2626"
+        />
       </div>
 
-      <div className="card shadow mt-4">
+      {/* Recent Events */}
 
-        <div className="card-header">
-          <h4>Recent Events</h4>
-        </div>
+      <div
+        style={{
+          background: "#ffffff",
+          borderRadius: "16px",
+          padding: "30px",
+          boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+        }}
+      >
+        <h2
+          style={{
+            marginBottom: "25px",
+            color: "#1e293b",
+          }}
+        >
+          Recent Events
+        </h2>
 
-        <div className="card-body">
-
-          {analytics.recentEvents.length === 0 ? (
-
-            <p>No events available.</p>
-
-          ) : (
-
-            <table className="table table-hover">
-
+        {analytics.recentEvents.length === 0 ? (
+          <p
+            style={{
+              color: "#64748b",
+            }}
+          >
+            No events available.
+          </p>
+        ) : (
+          <div
+            style={{
+              overflowX: "auto",
+            }}
+          >
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+              }}
+            >
               <thead>
-
-                <tr>
-                  <th>Title</th>
-                  <th>Date</th>
-                  <th>Venue</th>
-                  <th>RSVPs</th>
+                <tr
+                  style={{
+                    background: "#f8fafc",
+                  }}
+                >
+                  <th style={th}>Title</th>
+                  <th style={th}>Date</th>
+                  <th style={th}>Venue</th>
+                  <th style={th}>RSVPs</th>
                 </tr>
-
               </thead>
 
               <tbody>
-
                 {analytics.recentEvents.map((event) => (
-
                   <tr key={event.id}>
-
-                    <td>{event.title}</td>
-
-                    <td>{event.date}</td>
-
-                    <td>{event.location}</td>
-
-                    <td>{event.attendees}</td>
-
+                    <td style={td}>{event.title}</td>
+                    <td style={td}>{event.date}</td>
+                    <td style={td}>{event.location}</td>
+                    <td style={td}>{event.attendees}</td>
                   </tr>
-
                 ))}
-
               </tbody>
-
             </table>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
 
-          )}
-
-        </div>
-
+function StatCard({ title, value, icon, color }) {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        padding: "30px",
+        borderRadius: "16px",
+        textAlign: "center",
+        boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+      }}
+    >
+      <div
+        style={{
+          color,
+          marginBottom: "15px",
+        }}
+      >
+        {icon}
       </div>
 
+      <h3
+        style={{
+          color: "#64748b",
+          marginBottom: "12px",
+        }}
+      >
+        {title}
+      </h3>
+
+      <h2
+        style={{
+          color: "#1e293b",
+          margin: 0,
+        }}
+      >
+        {value}
+      </h2>
     </div>
   );
 }
+
+const th = {
+  padding: "15px",
+  textAlign: "left",
+  borderBottom: "2px solid #e5e7eb",
+  color: "#1e293b",
+};
+
+const td = {
+  padding: "15px",
+  borderBottom: "1px solid #e5e7eb",
+};
 
 export default Analytics;

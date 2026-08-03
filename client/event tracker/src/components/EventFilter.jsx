@@ -1,7 +1,7 @@
 function EventFilter({ category, setCategory }) {
   return (
     <select
-      className="form-select mb-3"
+      className="event-filter"
       value={category}
       onChange={(e) => setCategory(e.target.value)}
     >

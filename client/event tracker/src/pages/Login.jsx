@@ -11,25 +11,26 @@ function Login() {
     password: "",
   });
 
-  // State for toggling password visibility
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setCredentials({
-      ...credentials,
+    setCredentials((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       await login(credentials);
       navigate("/");
     } catch (err) {
       console.error("Login failed:", err);
+
       setError(
         err.message?.includes("Network error")
           ? "Unable to reach the backend server. Please make sure the Flask API is running on http://127.0.0.1:5555."
@@ -39,66 +40,120 @@ function Login() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.heading}>Login</h2>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#f5f7fb",
+        padding: "40px 20px",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "450px",
+          background: "#ffffff",
+          borderRadius: "16px",
+          padding: "35px",
+          boxShadow: "0 12px 30px rgba(0,0,0,.08)",
+        }}
+      >
+        <h2
+          style={{
+            textAlign: "center",
+            marginBottom: "25px",
+            color: "#1e293b",
+          }}
+        >
+          Login
+        </h2>
 
-        {error && <div style={styles.alert}>{error}</div>}
+        {error && (
+          <div
+            style={{
+              background: "#fee2e2",
+              color: "#b91c1c",
+              padding: "12px",
+              borderRadius: "8px",
+              marginBottom: "20px",
+            }}
+          >
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          {/* Email Field */}
-          <div style={styles.fieldGroup}>
-            <label htmlFor="email" style={styles.label}>
-              Email Address
-            </label>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "18px",
+          }}
+        >
+          <div>
+            <label style={styles.label}>Email Address</label>
+
             <input
               type="email"
-              id="email"
               name="email"
-              style={styles.input}
               value={credentials.email}
               onChange={handleChange}
               placeholder="student@university.edu"
               required
+              style={styles.input}
             />
           </div>
 
-          {/* Password Field with View Toggle */}
-          <div style={styles.fieldGroup}>
-            <label htmlFor="password" style={styles.label}>
-              Password
-            </label>
-            <div style={styles.inputWrapper}>
+          <div>
+            <label style={styles.label}>Password</label>
+
+            <div style={styles.passwordWrapper}>
               <input
                 type={showPassword ? "text" : "password"}
-                id="password"
                 name="password"
-                style={styles.inputWithToggle}
                 value={credentials.password}
                 onChange={handleChange}
                 placeholder="••••••••"
                 required
+                style={styles.passwordInput}
               />
+
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={styles.toggleBtn}
-                aria-label="Toggle password visibility"
+                style={styles.toggleButton}
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
           </div>
 
-          {/* Submit Button */}
-          <button type="submit" style={styles.button}>
+          <button
+            type="submit"
+            style={styles.submitButton}
+          >
             Login
           </button>
         </form>
 
-        <p style={styles.footerText}>
+        <p
+          style={{
+            marginTop: "25px",
+            textAlign: "center",
+            color: "#64748b",
+          }}
+        >
           Don't have an account?{" "}
-          <Link to="/register" style={styles.link}>
+          <Link
+            to="/register"
+            style={{
+              color: "#2563eb",
+              textDecoration: "none",
+              fontWeight: "600",
+            }}
+          >
             Register
           </Link>
         </p>
@@ -107,121 +162,61 @@ function Login() {
   );
 }
 
-// Dedicated Styles Object (Matches Register Component styling)
 const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    padding: "20px 0",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    padding: "36px 32px",
-    borderRadius: "12px",
-    boxShadow:
-      "0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01)",
-    width: "100%",
-    maxWidth: "420px",
-    textAlign: "left", // Resets center alignment inherited from App container
-    border: "1px solid #e5e7eb",
-  },
-  heading: {
-    fontSize: "1.65rem",
-    fontWeight: "700",
-    color: "#111827",
-    marginBottom: "24px",
-    textAlign: "center",
-    letterSpacing: "-0.02em",
-  },
-  alert: {
-    padding: "12px 16px",
-    backgroundColor: "#fef2f2",
-    border: "1px solid #fecaca",
-    color: "#dc2626",
-    borderRadius: "8px",
-    fontSize: "0.875rem",
-    marginBottom: "20px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "18px",
-  },
-  fieldGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-  },
   label: {
-    fontSize: "0.875rem",
+    display: "block",
+    marginBottom: "8px",
     fontWeight: "600",
-    color: "#374151",
+    color: "#334155",
   },
+
   input: {
     width: "100%",
-    padding: "10px 14px",
-    fontSize: "0.95rem",
-    borderRadius: "8px",
+    padding: "12px 15px",
+    borderRadius: "10px",
     border: "1px solid #d1d5db",
-    backgroundColor: "#f9fafb",
-    color: "#111827",
-    boxSizing: "border-box",
+    fontSize: "15px",
     outline: "none",
+    boxSizing: "border-box",
   },
-  inputWrapper: {
-    position: "relative",
+
+  passwordWrapper: {
     display: "flex",
     alignItems: "center",
-    width: "100%",
-  },
-  inputWithToggle: {
-    width: "100%",
-    padding: "10px 55px 10px 14px",
-    fontSize: "0.95rem",
-    borderRadius: "8px",
     border: "1px solid #d1d5db",
-    backgroundColor: "#f9fafb",
-    color: "#111827",
-    boxSizing: "border-box",
+    borderRadius: "10px",
+    overflow: "hidden",
+  },
+
+  passwordInput: {
+    flex: 1,
+    border: "none",
+    padding: "12px 15px",
     outline: "none",
+    fontSize: "15px",
   },
-  toggleBtn: {
-    position: "absolute",
-    right: "10px",
-    background: "none",
+
+  toggleButton: {
     border: "none",
-    color: "#0d6efd",
-    fontSize: "0.85rem",
-    fontWeight: "600",
+    background: "#2563eb",
+    color: "#fff",
+    padding: "12px 18px",
     cursor: "pointer",
-    padding: "4px 8px",
+    fontWeight: "600",
   },
-  button: {
-    marginTop: "6px",
+
+  submitButton: {
+    marginTop: "10px",
     width: "100%",
-    padding: "12px",
-    backgroundColor: "#0d6efd",
-    color: "#ffffff",
+    padding: "14px",
     border: "none",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    fontWeight: "600",
+    borderRadius: "10px",
+    background: "#2563eb",
+    color: "#fff",
+    fontSize: "16px",
+    fontWeight: "700",
     cursor: "pointer",
-    boxShadow: "0 2px 4px rgba(13, 110, 253, 0.2)",
-    transition: "background-color 0.2s ease",
-  },
-  footerText: {
-    marginTop: "24px",
-    fontSize: "0.875rem",
-    color: "#6b7280",
-    textAlign: "center",
-  },
-  link: {
-    color: "#0d6efd",
-    textDecoration: "none",
-    fontWeight: "600",
+    transition: "0.3s",
   },
 };
 

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "../services/eventService";
@@ -18,76 +19,229 @@ function CreateEvent() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       await createEvent(form);
-      alert("Event created successfully");
+      alert("Event created successfully.");
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert(err.message || "Failed to create event");
+      alert(err.message || "Failed to create event.");
     }
   };
 
   return (
-    <main className="simple-page">
-      <h1>Create Event</h1>
-      <p>Fill in the details below to publish your event and let attendees discover it quickly.</p>
-      
-      <form className="event-form" onSubmit={handleSubmit}>
-        <label>
-          Title
-          <input name="title" value={form.title} onChange={handleChange} required />
-        </label>
+    <main
+      style={{
+        maxWidth: "900px",
+        margin: "40px auto",
+        padding: "20px",
+      }}
+    >
+      <div
+        style={{
+          background: "#ffffff",
+          borderRadius: "16px",
+          padding: "35px",
+          boxShadow: "0 10px 25px rgba(0,0,0,.08)",
+        }}
+      >
+        <h1
+          style={{
+            textAlign: "center",
+            color: "#1e293b",
+            marginBottom: "10px",
+          }}
+        >
+          Create Event
+        </h1>
 
-        <label className="wide">
-          Description
-          <textarea name="description" value={form.description} onChange={handleChange} rows={4} required />
-        </label>
+        <p
+          style={{
+            textAlign: "center",
+            color: "#64748b",
+            marginBottom: "35px",
+            lineHeight: "1.6",
+          }}
+        >
+          Fill in the details below to publish your event and let attendees
+          discover it quickly.
+        </p>
 
-        <label>
-          Category
-          <input name="category" value={form.category} onChange={handleChange} />
-        </label>
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          <div>
+            <label style={styles.label}>Title</label>
 
-        <label>
-          Venue
-          <input name="location" value={form.location} onChange={handleChange} />
-        </label>
+            <input
+              type="text"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              required
+              style={styles.input}
+            />
+          </div>
 
-        <label>
-          Date
-          <input type="date" name="date" value={form.date} onChange={handleChange} required />
-        </label>
+          <div>
+            <label style={styles.label}>Category</label>
 
-        <label>
-          Time
-          <input type="time" name="time" value={form.time} onChange={handleChange} required />
-        </label>
+            <input
+              type="text"
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          </div>
 
-        <label>
-          Capacity
-          <input type="number" name="capacity" value={form.capacity} onChange={handleChange} />
-        </label>
+          <div
+            style={{
+              gridColumn: "1 / -1",
+            }}
+          >
+            <label style={styles.label}>Description</label>
 
-        <label>
-          Image URL
-          <input name="image" value={form.image} onChange={handleChange} />
-        </label>
+            <textarea
+              name="description"
+              rows={5}
+              value={form.description}
+              onChange={handleChange}
+              required
+              style={{
+                ...styles.input,
+                resize: "vertical",
+              }}
+            />
+          </div>
 
-        <div className="wide">
-          <button type="submit" className="primary-button">
-            Create Event
-          </button>
-        </div>
-      </form>
-      
+          <div>
+            <label style={styles.label}>Venue</label>
+
+            <input
+              type="text"
+              name="location"
+              value={form.location}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          </div>
+
+          <div>
+            <label style={styles.label}>Date</label>
+
+            <input
+              type="date"
+              name="date"
+              value={form.date}
+              onChange={handleChange}
+              required
+              style={styles.input}
+            />
+          </div>
+
+          <div>
+            <label style={styles.label}>Time</label>
+
+            <input
+              type="time"
+              name="time"
+              value={form.time}
+              onChange={handleChange}
+              required
+              style={styles.input}
+            />
+          </div>
+
+          <div>
+            <label style={styles.label}>Capacity</label>
+
+            <input
+              type="number"
+              name="capacity"
+              value={form.capacity}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          </div>
+
+          <div>
+            <label style={styles.label}>Image URL</label>
+
+            <input
+              type="text"
+              name="image"
+              value={form.image}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+              style={styles.input}
+            />
+          </div>
+
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "15px",
+            }}
+          >
+            <button
+              type="submit"
+              style={styles.button}
+            >
+              Create Event
+            </button>
+          </div>
+        </form>
+      </div>
     </main>
   );
 }
+
+const styles = {
+  label: {
+    display: "block",
+    marginBottom: "8px",
+    fontWeight: "600",
+    color: "#334155",
+  },
+
+  input: {
+    width: "100%",
+    padding: "12px 15px",
+    border: "1px solid #d1d5db",
+    borderRadius: "10px",
+    fontSize: "15px",
+    outline: "none",
+    boxSizing: "border-box",
+  },
+
+  button: {
+    background: "#2563eb",
+    color: "#ffffff",
+    border: "none",
+    padding: "14px 35px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontWeight: "700",
+    fontSize: "16px",
+  },
+};
 
 export default CreateEvent;

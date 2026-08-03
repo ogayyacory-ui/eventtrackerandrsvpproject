@@ -1,117 +1,121 @@
-
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
-    <nav style={{ background: "#102a43", boxShadow: "0 2px 14px rgba(16,42,67,.16)" }}>
-      <div
-        style={{
-          width: "min(1120px, calc(100% - 32px))",
-          minHeight: 68,
-          margin: "0 auto",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 24,
-          flexWrap: "wrap",
-        }}
-      >
+    <nav className="navbar">
+      <div className="navbar-container">
+
         <Link
-          style={{
-            color: "#fff",
-            fontWeight: 800,
-            fontSize: "1.08rem",
-            letterSpacing: "-.03em",
-            textDecoration: "none",
-          }}
           to="/"
+          className="navbar-logo"
+          onClick={closeMenu}
         >
           Campus Event Tracker
         </Link>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          <Link style={navLink} to="/">
+        <button
+          className="menu-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          ☰
+        </button>
+
+        <div className={`navbar-links ${menuOpen ? "active" : ""}`}>
+
+          <Link
+            to="/"
+            className="nav-link"
+            onClick={closeMenu}
+          >
             Home
           </Link>
-          <Link style={navLink} to="/events">
+
+          <Link
+            to="/events"
+            className="nav-link"
+            onClick={closeMenu}
+          >
             Events
           </Link>
 
           {user && (
             <>
-              <Link style={navLink} to="/my-rsvps">
+              <Link
+                to="/my-rsvps"
+                className="nav-link"
+                onClick={closeMenu}
+              >
                 My RSVPs
               </Link>
-              <Link style={navLink} to="/profile">
+
+              <Link
+                to="/profile"
+                className="nav-link"
+                onClick={closeMenu}
+              >
                 Profile
               </Link>
             </>
           )}
 
-          {(user?.role === "organizer" || user?.role === "admin") && (
-            <Link style={navLink} to="/dashboard">
+          {(user?.role === "organizer" ||
+            user?.role === "admin") && (
+            <Link
+              to="/dashboard"
+              className="nav-link"
+              onClick={closeMenu}
+            >
               Dashboard
             </Link>
           )}
 
           {user && (
-            <span style={userLabel}>
+            <span className="user-badge">
               {user.username} ({user.role})
             </span>
           )}
 
           {!user ? (
             <>
-              <Link style={navLink} to="/login">
+              <Link
+                to="/login"
+                className="nav-link"
+                onClick={closeMenu}
+              >
                 Login
               </Link>
+
               <Link
-                style={{ ...navLink, background: "#2f855a", color: "#fff" }}
                 to="/register"
+                className="register-btn"
+                onClick={closeMenu}
               >
                 Register
               </Link>
             </>
           ) : (
             <button
-              style={{
-                border: "1px solid #93b6c9",
-                borderRadius: 8,
-                background: "transparent",
-                color: "#fff",
-                padding: "8px 12px",
-                cursor: "pointer",
+              className="logout-btn"
+              onClick={() => {
+                logout();
+                closeMenu();
               }}
-              onClick={logout}
             >
               Logout
             </button>
           )}
+
         </div>
       </div>
     </nav>
   );
 }
-
-const navLink = {
-  color: "#d9e6ee",
-  textDecoration: "none",
-  padding: "8px 10px",
-  borderRadius: 8,
-  fontSize: ".93rem",
-  fontWeight: 600,
-};
-
-const userLabel = {
-  color: "#a8d0ff",
-  fontWeight: 600,
-  fontSize: ".91rem",
-  padding: "8px 10px",
-  borderRadius: 8,
-  border: "1px solid rgba(255,255,255,0.18)",
-};
 
 export default Navbar;

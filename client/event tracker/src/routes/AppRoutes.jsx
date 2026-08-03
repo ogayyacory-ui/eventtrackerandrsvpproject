@@ -15,26 +15,27 @@ import Analytics from "../pages/Analytics";
 import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 
-// Protected Route
 import ProtectedRoute from "../components/ProtectedRoute";
+
+const OrganizerRoute = ({ children }) => (
+  <ProtectedRoute role={["organizer", "admin"]}>
+    {children}
+  </ProtectedRoute>
+);
 
 function AppRoutes() {
   return (
     <Routes>
 
-      {/* ===================== PUBLIC ROUTES ===================== */}
+      {/* Public */}
 
       <Route path="/" element={<Home />} />
-
+      <Route path="/events" element={<Events />} />
+      <Route path="/events/:id" element={<EventDetails />} />
       <Route path="/login" element={<Login />} />
-
       <Route path="/register" element={<Register />} />
 
-      <Route path="/events" element={<Events />} />
-
-      <Route path="/events/:id" element={<EventDetails />} />
-
-      {/* ===================== AUTHENTICATED USERS ===================== */}
+      {/* Authenticated */}
 
       <Route
         path="/profile"
@@ -54,54 +55,54 @@ function AppRoutes() {
         }
       />
 
-      {/* ===================== ORGANIZER ROUTES ===================== */}
+      {/* Organizer */}
 
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute role={["organizer", "admin"]}>
+          <OrganizerRoute>
             <Dashboard />
-          </ProtectedRoute>
+          </OrganizerRoute>
         }
       />
 
       <Route
         path="/create-event"
         element={
-          <ProtectedRoute role={["organizer", "admin"]}>
+          <OrganizerRoute>
             <CreateEvent />
-          </ProtectedRoute>
+          </OrganizerRoute>
         }
       />
 
       <Route
         path="/edit-event/:id"
         element={
-          <ProtectedRoute role={["organizer", "admin"]}>
+          <OrganizerRoute>
             <EditEvent />
-          </ProtectedRoute>
+          </OrganizerRoute>
         }
       />
 
       <Route
         path="/manage-events"
         element={
-          <ProtectedRoute role={["organizer", "admin"]}>
+          <OrganizerRoute>
             <ManageEvents />
-          </ProtectedRoute>
+          </OrganizerRoute>
         }
       />
 
       <Route
         path="/analytics"
         element={
-          <ProtectedRoute role={["organizer", "admin"]}>
+          <OrganizerRoute>
             <Analytics />
-          </ProtectedRoute>
+          </OrganizerRoute>
         }
       />
 
-      {/* ===================== 404 PAGE ===================== */}
+      {/* 404 */}
 
       <Route path="*" element={<NotFound />} />
 

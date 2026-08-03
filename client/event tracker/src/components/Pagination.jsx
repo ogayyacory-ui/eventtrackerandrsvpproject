@@ -3,45 +3,49 @@ function Pagination({
   totalPages,
   onPageChange,
 }) {
-
   const pages = [];
 
   for (let i = 1; i <= totalPages; i++) {
     pages.push(i);
   }
 
+  if (totalPages <= 1) return null;
+
   return (
+    <nav className="pagination-container">
 
-    <nav>
+      <button
+        className="pagination-btn"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        ← Previous
+      </button>
 
-      <ul className="pagination justify-content-center">
-
+      <div className="pagination-pages">
         {pages.map((page) => (
-
-          <li
+          <button
             key={page}
-            className={`page-item ${
-              currentPage === page ? "active" : ""
+            onClick={() => onPageChange(page)}
+            className={`pagination-page ${
+              currentPage === page ? "active-page" : ""
             }`}
           >
-
-            <button
-              className="page-link"
-              onClick={() => onPageChange(page)}
-            >
-              {page}
-            </button>
-
-          </li>
-
+            {page}
+          </button>
         ))}
+      </div>
 
-      </ul>
+      <button
+        className="pagination-btn"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        Next →
+      </button>
 
     </nav>
-
   );
-
 }
 
 export default Pagination;

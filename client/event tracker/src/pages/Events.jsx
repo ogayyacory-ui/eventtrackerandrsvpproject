@@ -17,26 +17,61 @@ function Events() {
   if (loading) return <Loader />;
 
   return (
-    <div>
+    <main
+      style={{
+        maxWidth: "1400px",
+        margin: "40px auto",
+        padding: "20px",
+      }}
+    >
+      <h1
+        style={{
+          textAlign: "center",
+          color: "#1e293b",
+          marginBottom: "40px",
+          fontSize: "2.5rem",
+          fontWeight: "700",
+        }}
+      >
+        Upcoming Events
+      </h1>
 
-      <h2 className="mb-4">Upcoming Events</h2>
-
-      <div className="row">
-
-        {events.length === 0 ? (
-          <h4>No events available.</h4>
-        ) : (
-          events.map((event) => (
+      {events.length === 0 ? (
+        <div
+          style={{
+            background: "#ffffff",
+            borderRadius: "16px",
+            padding: "50px",
+            textAlign: "center",
+            boxShadow: "0 8px 20px rgba(0,0,0,.08)",
+          }}
+        >
+          <h3
+            style={{
+              color: "#64748b",
+              margin: 0,
+            }}
+          >
+            No events available.
+          </h3>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "30px",
+          }}
+        >
+          {events.map((event) => (
             <EventCard
               key={event.id}
               event={event}
             />
-          ))
-        )}
-
-      </div>
-
-    </div>
+          ))}
+        </div>
+      )}
+    </main>
   );
 }
 

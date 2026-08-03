@@ -1,28 +1,47 @@
 import { Link } from "react-router-dom";
-import { ui } from "../styles/ui";
 
 function EventCard({ event, eventimage }) {
+  const image =
+    eventimage ||
+    event.image ||
+    "https://placehold.co/400x220?text=No+Image";
+
   return (
-    <article style={{ ...ui.card, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+    <article className="event-card">
+      <img
+        src={image}
+        alt={event.title}
+        className="event-card-image"
+      />
 
-        <img
-          src={
-            eventimage ||
-            "https://placehold.co/400x200.png?text=No+Image"
-          }
-          alt={event.title}
-          style={{ width: "100%", height: 200, objectFit: "cover", background: "#dfe9ee" }}
-        />
+      <div className="event-card-body">
+        <h3 className="event-card-title">
+          {event.title}
+        </h3>
 
-        <div style={{ padding: "20px 20px 12px", flex: 1 }}>
-          <h3 style={{ margin: "0 0 13px", color: "#102a43", fontSize: "1.13rem" }}>{event.title}</h3>
-          <p style={{ ...ui.muted, margin: "0 0 6px", fontSize: ".9rem" }}>📅 {event.date}</p>
-          <p style={{ ...ui.muted, margin: "0 0 13px", fontSize: ".9rem" }}>📍 {event.location}</p>
-          <p style={{ ...ui.muted, margin: 0, fontSize: ".93rem" }}>{event.description?.substring(0, 100)}{event.description?.length > 100 ? "…" : ""}</p>
-        </div>
-        <div style={{ padding: "8px 20px 20px" }}>
-          <Link to={`/events/${event.id}`} style={{ ...ui.primaryButton, width: "100%" }}>View details</Link>
-        </div>
+        <p className="event-card-meta">
+          {event.date}
+        </p>
+
+        <p className="event-card-meta">
+           {event.location}
+        </p>
+
+        <p className="event-card-description">
+          {event.description?.length > 120
+            ? `${event.description.substring(0, 120)}...`
+            : event.description}
+        </p>
+      </div>
+
+      <div className="event-card-footer">
+        <Link
+          to={`/events/${event.id}`}
+          className="event-card-button"
+        >
+          View Details
+        </Link>
+      </div>
     </article>
   );
 }

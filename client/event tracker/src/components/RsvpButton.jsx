@@ -26,8 +26,8 @@ function RSVPButton({ eventId, initialStatus = false }) {
 
   return (
     <button
-      className={`btn ${
-        registered ? "btn-danger" : "btn-success"
+      className={`rsvp-btn ${
+        registered ? "rsvp-cancel" : "rsvp-register"
       }`}
       onClick={handleRSVP}
       disabled={loading}
@@ -36,7 +36,7 @@ function RSVPButton({ eventId, initialStatus = false }) {
         ? "Please wait..."
         : registered
         ? "Cancel RSVP"
-        : "RSVP"}
+        : "RSVP Now"}
     </button>
   );
 }

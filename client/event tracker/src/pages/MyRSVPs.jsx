@@ -17,22 +17,60 @@ function MyRSVPs() {
   if (loading) return <Loader />;
 
   return (
-    <div>
-      <h2 className="mb-4">My RSVPs</h2>
+    <div
+      style={{
+        maxWidth: "1400px",
+        margin: "40px auto",
+        padding: "20px",
+      }}
+    >
+      <h2
+        style={{
+          marginBottom: "30px",
+          color: "#1e293b",
+          textAlign: "center",
+          fontSize: "2rem",
+        }}
+      >
+        My RSVPs
+      </h2>
 
-      <div className="row">
-        {events.length === 0 ? (
-          <p>You haven't registered for any events yet.</p>
-        ) : (
-          events.map((rsvp) => (
+      {events.length === 0 ? (
+        <div
+          style={{
+            background: "#ffffff",
+            padding: "30px",
+            borderRadius: "12px",
+            textAlign: "center",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+          }}
+        >
+          <p
+            style={{
+              color: "#64748b",
+              fontSize: "1.1rem",
+            }}
+          >
+            You haven't registered for any events yet.
+          </p>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: "25px",
+          }}
+        >
+          {events.map((rsvp) => (
             <EventCard
               key={rsvp.id}
               event={rsvp.event}
-              eventimage={rsvp.event.image}
+              eventImage={rsvp.event?.image}
             />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

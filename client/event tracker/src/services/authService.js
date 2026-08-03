@@ -1,17 +1,17 @@
 import api from "./api";
 
-export const login = async (credentials) => {
+export async function login(credentials) {
   return api.post("/api/auth/login", credentials);
-};
+}
 
-export const register = async (userData) => {
+export async function register(userData) {
   return api.post("/api/auth/register", userData);
-};
+}
 
-export const getCurrentUser = async () => {
+export async function getCurrentUser() {
   return api.get("/api/auth/me");
-};
+}
 
-export const logout = () => {
+export function logout() {
   localStorage.removeItem("token");
-};
+}

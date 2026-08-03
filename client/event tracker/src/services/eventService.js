@@ -1,23 +1,22 @@
-
 import api from "./api";
 
-export const getEvents = async () => {
+export async function getEvents() {
   const data = await api.get("/api/events");
   return data.items || [];
-};
+}
 
-export const getEvent = async (id) => {
+export async function getEvent(id) {
   return api.get(`/api/events/${id}`);
-};
+}
 
-export const createEvent = async (eventData) => {
+export async function createEvent(eventData) {
   return api.post("/api/events", eventData);
-};
+}
 
-export const updateEvent = async (id, eventData) => {
+export async function updateEvent(id, eventData) {
   return api.patch(`/api/events/${id}`, eventData);
-};
+}
 
-export const deleteEvent = async (id) => {
+export async function deleteEvent(id) {
   return api.delete(`/api/events/${id}`);
-};
+}
