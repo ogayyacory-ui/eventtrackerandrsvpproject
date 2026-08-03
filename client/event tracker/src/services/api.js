@@ -20,7 +20,8 @@ async function request(path, options = {}) {
     });
   } catch (error) {
     throw new Error(
-      `Network error: Unable to reach the backend server.\n${error.message}`
+      `Network error: Unable to reach the backend server.\n${error.message}`,
+      { cause: error },
     );
   }
 

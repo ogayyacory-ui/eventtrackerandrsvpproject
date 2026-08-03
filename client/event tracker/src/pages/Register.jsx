@@ -10,7 +10,6 @@ function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "student",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +38,6 @@ function Register() {
         username: formData.name,
         email: formData.email,
         password: formData.password,
-        role: formData.role,
       });
 
       navigate("/");
@@ -179,20 +177,9 @@ function Register() {
             </div>
           </div>
 
-          <div>
-            <label style={styles.label}>Account Type</label>
-
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              style={styles.input}
-            >
-              <option value="student">Student</option>
-              <option value="organizer">Organizer</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+          <p style={{ margin: 0, color: "#64748b", fontSize: "0.9rem" }}>
+            New accounts are student accounts. Contact an administrator for organizer access.
+          </p>
 
           <button type="submit" style={styles.submitButton}>
             Register

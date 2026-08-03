@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
 import Loader from "../components/Loader";
 import EventCard from "../components/EventCard";
+import EventFilter from "../components/EventFilter";
+import SearchBar from "../components/SearchBar";
+import Pagination from "../components/Pagination";
 import { getEvents } from "../services/eventService";
 
 function Events() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    getEvents()
-      .then(setEvents)
-      .catch(console.error)
+    getEvents({ page, per_page: 6, search, category })
+      .then((data) => {
+        setEvents(data.items || []);
+        setTotalPages(data.total_pages || 1);
+        setError("");
+      })
+      .catch((err) => setError(err.message || "Unable to load events."))
       .finally(() => setLoading(false));
-  }, []);
+  }, [page, search, category]);
 
   if (loading) return <Loader />;
 
@@ -36,7 +48,14 @@ function Events() {
         Upcoming Events
       </h1>
 
-      {events.length === 0 ? (
+      <div style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
+        <SearchBar value={search} onChange={(value) => { setSearch(value); setPage(1); }} />
+        <EventFilter category={category} setCategory={(value) => { setCategory(value); setPage(1); }} />
+      </div>
+
+      {error && <p role="alert" style={{ color: "#b91c1c" }}>{error}</p>}
+
+      {!error && events.length === 0 ? (
         <div
           style={{
             background: "#ffffff",
@@ -71,6 +90,7 @@ function Events() {
           ))}
         </div>
       )}
+      <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
     </main>
   );
 }

@@ -10,7 +10,7 @@ function ManageEvents() {
   const loadEvents = async () => {
     try {
       const data = await getEvents();
-      setEvents(data);
+      setEvents(data.items || []);
     } catch (error) {
       console.error(error);
     } finally {
@@ -19,7 +19,10 @@ function ManageEvents() {
   };
 
   useEffect(() => {
-    loadEvents();
+    getEvents()
+      .then((data) => setEvents(data.items || []))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
   const handleDelete = async (id) => {

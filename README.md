@@ -59,7 +59,14 @@ http://127.0.0.1:5555
 
 ### Database
 
-The app uses SQLite by default and stores data in `app.db` in the project root.
+The app uses SQLite by default and stores data in `instance/app.db`.
+
+Apply schema changes and add the sample data with:
+
+```bash
+flask --app app db upgrade
+python seed.py
+```
 
 ### Backend API Routes
 
@@ -75,6 +82,10 @@ The app uses SQLite by default and stores data in `app.db` in the project root.
 - `GET /api/users/me/rsvps` — list user RSVPs
 - `GET /api/tags` — list all tags
 - `POST /api/tags` — create a new tag
+- `GET /api/analytics` — organizer/admin event and RSVP totals
+
+Public registration creates student accounts only. An administrator must assign
+organizer or admin roles, preventing privilege escalation through the sign-up form.
 
 ## Frontend Setup
 
@@ -136,10 +147,7 @@ The auth service and event service utilities use this centralized API helper.
 
 ## Optional Improvements
 
-- Add a `.env` file for `JWT_SECRET_KEY` and database URI configuration.
-- Implement better error handling and toast notifications in the React UI.
-- Add role-based navigation for organizers and admins.
-- Create seed data scripts for sample users, events, and tags.
+- Configure a non-default `JWT_SECRET_KEY` in `.env` before deployment.
 
 ## Contact
 

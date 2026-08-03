@@ -1,8 +1,10 @@
 import api from "./api";
 
-export async function getEvents() {
-  const data = await api.get("/api/events");
-  return data.items || [];
+export async function getEvents(params = {}) {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, value]) => value !== "" && value != null),
+  );
+  return api.get(`/api/events${query.size ? `?${query}` : ""}`);
 }
 
 export async function getEvent(id) {

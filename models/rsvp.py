@@ -4,6 +4,9 @@ from datetime import datetime
 
 class RSVP(db.Model):
     __tablename__ = 'rsvps'
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'event_id', name='uq_rsvp_user_event'),
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)

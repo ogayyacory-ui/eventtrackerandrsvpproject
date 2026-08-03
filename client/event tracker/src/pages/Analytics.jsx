@@ -22,9 +22,8 @@ function Analytics() {
   useEffect(() => {
     async function loadAnalytics() {
       try {
-        const response = await api.get("/analytics");
-
-        setAnalytics(response.data);
+        const response = await api.get("/api/analytics");
+        setAnalytics(response);
       } catch (error) {
         console.error("Analytics Error:", error);
       } finally {

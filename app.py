@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from flask import Flask, request, jsonify
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask_cors import CORS
@@ -22,9 +24,7 @@ from schemas.tag_schema import tag_schema, tags_schema
 load_dotenv()
 
 
-def create_app(config_name=None):
-    if config_name is None:
-        config_name = os.getenv("FLASK_ENV", "development")
+def create_app(config=None):
 
     app = Flask(__name__, instance_relative_config=True)
     app.config['CORS_HEADERS'] = 'Content-Type'
@@ -39,7 +39,9 @@ def create_app(config_name=None):
     db_path = os.path.join(app.instance_path, 'app.db')
     app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'development-only-change-me')
+    if config:
+        app.config.update(config)
 
     # Initialize Extensions
     db.init_app(app)
@@ -47,6 +49,46 @@ def create_app(config_name=None):
     jwt.init_app(app)
     cors.init_app(app)
     migrate.init_app(app, db)
+
+    @app.errorhandler(404)
+    def not_found(_error):
+        return jsonify({'error': 'Resource not found'}), 404
+
+    @app.errorhandler(400)
+    def bad_request(_error):
+        return jsonify({'error': 'Invalid request'}), 400
+
+    def current_user():
+        return db.session.get(User, int(get_jwt_identity()))
+
+    def require_roles(*roles):
+        user = current_user()
+        if not user or user.role not in roles:
+            return None, (jsonify({'error': 'Forbidden'}), 403)
+        return user, None
+
+    def event_payload(data, partial=False):
+        required = ('title', 'description', 'category', 'location', 'capacity')
+        if not partial:
+            missing = [field for field in required if not data.get(field)]
+            if not data.get('event_date') and not (data.get('date') and data.get('time')):
+                missing.append('event_date')
+            if missing:
+                return None, {'error': f"Missing required fields: {', '.join(missing)}"}
+        values = {key: data[key] for key in ('title', 'description', 'category', 'location', 'image') if key in data}
+        if 'capacity' in data:
+            try:
+                values['capacity'] = int(data['capacity'])
+                if values['capacity'] < 1:
+                    raise ValueError
+            except (TypeError, ValueError):
+                return None, {'error': 'capacity must be a positive integer'}
+        if data.get('event_date') or (data.get('date') and data.get('time')):
+            try:
+                values['event_date'] = datetime.fromisoformat(data.get('event_date') or f"{data['date']}T{data['time']}")
+            except (TypeError, ValueError):
+                return None, {'error': 'event_date must be a valid ISO-8601 datetime'}
+        return values, None
 
     # =========================================================================
     # 1. AUTHENTICATION ROUTES
@@ -56,27 +98,24 @@ def create_app(config_name=None):
     def register():
         data = request.get_json() or {}
 
+        required = ('username', 'email', 'password')
+        if any(not data.get(field) for field in required):
+            return jsonify({'error': 'username, email, and password are required'}), 400
+        if len(data['password']) < 8:
+            return jsonify({'error': 'password must be at least 8 characters'}), 400
+
         if User.query.filter((User.email == data.get('email')) | (User.username == data.get('username'))).first():
             return jsonify({'error': 'User with this email or username already exists'}), 400
 
         user = User(
             username=data['username'],
             email=data['email'],
-            role=data.get('role', 'student')
+            # Public registration cannot grant privileged roles.
+            role='student'
         )
         user.set_password(data['password'])
         db.session.add(user)
         db.session.commit()
-
-        # If organizer or admin, auto-create an organizer profile
-        if user.role in ('admin', 'organizer'):
-            profile = OrganizerProfile(
-                user_id=user.id,
-                organization_name=data.get('organization_name', 'Student Union'),
-                department=data.get('department', 'General')
-            )
-            db.session.add(profile)
-            db.session.commit()
 
         return jsonify(user_schema.dump(user)), 201
 
@@ -97,8 +136,9 @@ def create_app(config_name=None):
     @app.route('/api/auth/me', methods=['GET'])
     @jwt_required()
     def me():
-        current_user_id = get_jwt_identity()
-        user = User.query.get_or_404(current_user_id)
+        user = current_user()
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
         return jsonify(user_schema.dump(user)), 200
 
     # =========================================================================
@@ -109,6 +149,8 @@ def create_app(config_name=None):
     def get_events():
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 6, type=int)
+        if page < 1 or not 1 <= per_page <= 100:
+            return jsonify({'error': 'page must be >= 1 and per_page must be between 1 and 100'}), 400
         category = request.args.get('category')
         tag_name = request.args.get('tag')
         search = request.args.get('search')
@@ -135,13 +177,14 @@ def create_app(config_name=None):
     @app.route('/api/events', methods=['POST'])
     @jwt_required()
     def create_event():
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
-
-        if not user or user.role not in ('organizer', 'admin'):
-            return jsonify({'error': 'Forbidden: Organizer or Admin privilege required'}), 403
+        user, error = require_roles('organizer', 'admin')
+        if error:
+            return error
 
         data = request.get_json(silent=True) or {}
+        values, validation_error = event_payload(data)
+        if validation_error:
+            return jsonify(validation_error), 400
 
         # Ensure organizer profile exists; create one from provided data if missing
         if not user.organizer_profile:
@@ -153,21 +196,8 @@ def create_app(config_name=None):
             db.session.add(profile)
             db.session.commit()
 
-        data = request.get_json() or {}
-        event_date_value = None
-        if data.get('event_date'):
-            event_date_value = datetime.fromisoformat(data['event_date'])
-        elif data.get('date') and data.get('time'):
-            event_date_value = datetime.fromisoformat(f"{data['date']}T{data['time']}")
-
         new_event = Event(
-            title=data['title'],
-            description=data['description'],
-            category=data['category'],
-            location=data['location'],
-            capacity=data['capacity'],
-            image=data.get('image'),
-            event_date=event_date_value,
+            **values,
             organizer_id=user.organizer_profile.id
         )
 
@@ -187,22 +217,19 @@ def create_app(config_name=None):
     @app.route('/api/events/<int:event_id>', methods=['PATCH'])
     @jwt_required()
     def update_event(event_id):
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
-
-        if not user or user.role != 'admin':
-            return jsonify({'error': 'Forbidden: Admin privilege required'}), 403
-
         event = Event.query.get_or_404(event_id)
+        user, error = require_roles('organizer', 'admin')
+        if error:
+            return error
+        if user.role != 'admin' and event.organizer.user_id != user.id:
+            return jsonify({'error': 'Forbidden: You can only edit your own events'}), 403
         data = request.get_json() or {}
+        values, validation_error = event_payload(data, partial=True)
+        if validation_error:
+            return jsonify(validation_error), 400
 
-        for key, val in data.items():
-            if key == 'event_date':
-                setattr(event, key, datetime.fromisoformat(val))
-            elif key == 'date' and data.get('time'):
-                setattr(event, 'event_date', datetime.fromisoformat(f"{val}T{data['time']}"))
-            elif hasattr(event, key) and key not in ('tag_ids', 'date', 'time'):
-                setattr(event, key, val)
+        for key, val in values.items():
+            setattr(event, key, val)
 
         if 'tag_ids' in data:
             event.tags = Tag.query.filter(Tag.id.in_(data['tag_ids'])).all()
@@ -213,13 +240,12 @@ def create_app(config_name=None):
     @app.route('/api/events/<int:event_id>', methods=['DELETE'])
     @jwt_required()
     def delete_event(event_id):
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
-
-        if not user or user.role != 'admin':
-            return jsonify({'error': 'Forbidden: Admin privilege required'}), 403
-
         event = Event.query.get_or_404(event_id)
+        user, error = require_roles('organizer', 'admin')
+        if error:
+            return error
+        if user.role != 'admin' and event.organizer.user_id != user.id:
+            return jsonify({'error': 'Forbidden: You can only delete your own events'}), 403
         db.session.delete(event)
         db.session.commit()
         return jsonify({'message': 'Event deleted successfully'}), 200
@@ -231,7 +257,7 @@ def create_app(config_name=None):
     @app.route('/api/events/<int:event_id>/rsvp', methods=['POST'])
     @jwt_required()
     def create_rsvp(event_id):
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         Event.query.get_or_404(event_id)
 
         if RSVP.query.filter_by(user_id=current_user_id, event_id=event_id).first():
@@ -245,13 +271,17 @@ def create_app(config_name=None):
             status='attending'
         )
         db.session.add(new_rsvp)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return jsonify({'error': 'RSVP already submitted for this event'}), 409
         return jsonify(rsvp_schema.dump(new_rsvp)), 201
 
     @app.route('/api/events/<int:event_id>/rsvp', methods=['DELETE'])
     @jwt_required()
     def cancel_rsvp(event_id):
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         rsvp = RSVP.query.filter_by(user_id=current_user_id, event_id=event_id).first()
 
         if not rsvp:
@@ -264,7 +294,7 @@ def create_app(config_name=None):
     @app.route('/api/users/me/rsvps', methods=['GET'])
     @jwt_required()
     def get_user_rsvps():
-        current_user_id = get_jwt_identity()
+        current_user_id = int(get_jwt_identity())
         rsvps = RSVP.query.filter_by(user_id=current_user_id).all()
         return jsonify(rsvps_schema.dump(rsvps)), 200
 
@@ -280,6 +310,9 @@ def create_app(config_name=None):
     @app.route('/api/tags', methods=['POST'])
     @jwt_required()
     def create_tag():
+        _user, error = require_roles('organizer', 'admin')
+        if error:
+            return error
         data = request.get_json() or {}
         name = data.get('name', '').strip().lower()
 
@@ -292,6 +325,35 @@ def create_app(config_name=None):
         db.session.add(new_tag)
         db.session.commit()
         return jsonify(tag_schema.dump(new_tag)), 201
+
+    @app.route('/api/analytics', methods=['GET'])
+    @jwt_required()
+    def analytics():
+        _user, error = require_roles('organizer', 'admin')
+        if error:
+            return error
+        total_events = db.session.scalar(db.select(func.count(Event.id)))
+        total_rsvps = db.session.scalar(db.select(func.count(RSVP.id)))
+        now = datetime.utcnow()
+        upcoming_events = db.session.scalar(db.select(func.count(Event.id)).where(Event.event_date >= now))
+        completed_events = db.session.scalar(db.select(func.count(Event.id)).where(Event.event_date < now))
+        recent = db.session.execute(
+            db.select(Event, func.count(RSVP.id).label('attendees'))
+            .outerjoin(RSVP)
+            .group_by(Event.id)
+            .order_by(Event.event_date.desc())
+            .limit(5)
+        ).all()
+        return jsonify({
+            'totalEvents': total_events,
+            'totalRSVPs': total_rsvps,
+            'upcomingEvents': upcoming_events,
+            'completedEvents': completed_events,
+            'recentEvents': [{
+                'id': event.id, 'title': event.title, 'event_date': event.event_date.isoformat(),
+                'location': event.location, 'attendees': attendees
+            } for event, attendees in recent]
+        }), 200
 
     return app
 

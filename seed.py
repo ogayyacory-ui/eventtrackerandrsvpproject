@@ -8,14 +8,12 @@ from models.event import Event
 from models.rsvp import RSVP
 from models.tag import Tag
 
-app = create_app("development")
+app = create_app()
 
 with app.app_context():
-    print("Dropping all tables...")
-    db.drop_all()
-
-    print("Creating tables...")
-    db.create_all()
+    if User.query.first():
+        print("Database already contains data; skipping seed.")
+        raise SystemExit(0)
 
     # =====================================================
     # USERS

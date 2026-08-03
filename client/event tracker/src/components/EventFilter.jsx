@@ -6,12 +6,12 @@ function EventFilter({ category, setCategory }) {
       onChange={(e) => setCategory(e.target.value)}
     >
       <option value="">All Categories</option>
-      <option value="Academic">Academic</option>
-      <option value="Technology">Technology</option>
-      <option value="Sports">Sports</option>
-      <option value="Entertainment">Entertainment</option>
-      <option value="Career">Career</option>
-      <option value="Club">Club Activities</option>
+      <option value="academic">Academic</option>
+      <option value="technology">Technology</option>
+      <option value="sports">Sports</option>
+      <option value="entertainment">Entertainment</option>
+      <option value="career">Career</option>
+      <option value="club">Club Activities</option>
     </select>
   );
 }
