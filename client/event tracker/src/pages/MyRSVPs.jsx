@@ -18,24 +18,21 @@ function MyRSVPs() {
 
   return (
     <div>
-
       <h2 className="mb-4">My RSVPs</h2>
 
       <div className="row">
-
         {events.length === 0 ? (
           <p>You haven't registered for any events yet.</p>
         ) : (
-          events.map((event) => (
+          events.map((rsvp) => (
             <EventCard
-              key={event.id}
-              event={event}
+              key={rsvp.id}
+              event={rsvp.event}
+              eventimage={rsvp.event.image}
             />
           ))
         )}
-
       </div>
-
     </div>
   );
 }

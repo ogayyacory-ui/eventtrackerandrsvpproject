@@ -77,7 +77,7 @@ class EventDetailResource(Resource):
         event = Event.query.get_or_404(event_id)
         return event_schema.dump(event), 200
 
-    @admin_required()
+    @organizer_or_admin_required()
     def patch(self, event_id):
         event = Event.query.get_or_404(event_id)
         data = request.get_json() or {}
@@ -94,7 +94,7 @@ class EventDetailResource(Resource):
         db.session.commit()
         return event_schema.dump(event), 200
 
-    @admin_required()
+    @organizer_or_admin_required()
     def delete(self, event_id):
         event = Event.query.get_or_404(event_id)
         db.session.delete(event)

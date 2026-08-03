@@ -43,9 +43,16 @@ function EventDetails() {
 
         <hr />
 
-        <p><strong>Date:</strong> {event.date}</p>
-
-        <p><strong>Time:</strong> {event.time}</p>
+        {(() => {
+          const raw = event.event_date || event.eventDate || event.date;
+          const d = raw ? new Date(raw) : null;
+          return (
+            <>
+              <p><strong>Date:</strong> {d ? d.toLocaleDateString() : '—'}</p>
+              <p><strong>Time:</strong> {d ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}</p>
+            </>
+          );
+        })()}
 
         <p><strong>Venue:</strong> {event.location}</p>
 

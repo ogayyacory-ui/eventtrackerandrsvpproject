@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { ui } from "../styles/ui";
 
-function EventCard({ event }) {
+function EventCard({ event, eventimage }) {
   return (
     <article style={{ ...ui.card, overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
         <img
           src={
-            event.image ||
-            "https://via.placeholder.com/400x200?text=Campus+Event"
+            eventimage ||
+            "https://placehold.co/400x200.png?text=No+Image"
           }
           alt={event.title}
           style={{ width: "100%", height: 200, objectFit: "cover", background: "#dfe9ee" }}

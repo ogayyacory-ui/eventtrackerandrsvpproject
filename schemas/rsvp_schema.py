@@ -8,6 +8,7 @@ class RSVPSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = RSVP
         include_fk = True
+        load_instance = True
 
 rsvp_schema = RSVPSchema()
 rsvps_schema = RSVPSchema(many=True)

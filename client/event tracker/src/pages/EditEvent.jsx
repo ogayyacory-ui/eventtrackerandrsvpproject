@@ -3,59 +3,101 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getEvent, updateEvent } from "../services/eventService";
 
 function EditEvent() {
-
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [event, setEvent] = useState({});
+  const [event, setEvent] = useState({
+    title: "",
+    description: "",
+    category: "",
+    location: "",
+    date: "",
+    time: "",
+    capacity: "",
+    image: "",
+  });
 
   useEffect(() => {
-
     const loadEvent = async () => {
-
       const data = await getEvent(id);
-
       setEvent(data);
-
     };
 
     loadEvent();
-
   }, [id]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEvent((prev) => ({ ...prev, [name]: value }));
+  };
 
-    setEvent({
-      ...event,
-      [e.target.name]: e.target.value
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await updateEvent(id, event);
+      alert("Event updated successfully");
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert(err.message || "Failed to update event");
+    }
+  };
+
+  return (
     <main className="simple-page">
       <h1>Edit Event</h1>
 
       <form className="event-form" onSubmit={handleSubmit}>
         <label>
           Title
-          <input name="title" value={event.title || ""} onChange={handleChange} />
+          <input
+            name="title"
+            value={event.title || ""}
+            onChange={handleChange}
+            required
+          />
         </label>
 
         <label className="wide">
           Description
-          <textarea name="description" rows={4} value={event.description || ""} onChange={handleChange} />
+          <textarea
+            name="description"
+            rows={4}
+            value={event.description || ""}
+            onChange={handleChange}
+            required
+          ></textarea>
         </label>
 
         <label>
           Venue
-          <input name="location" value={event.location || ""} onChange={handleChange} />
+          <input
+            name="location"
+            value={event.location || ""}
+            onChange={handleChange}
+          />
         </label>
 
         <label>
           Date
-          <input type="date" name="date" value={event.date || ""} onChange={handleChange} />
+          <input
+            type="date"
+            name="date"
+            value={event.date || ""}
+            onChange={handleChange}
+            required
+          />
         </label>
 
         <label>
           Time
-          <input type="time" name="time" value={event.time || ""} onChange={handleChange} />
+          <input
+            type="time"
+            name="time"
+            value={event.time || ""}
+            onChange={handleChange}
+            required
+          />
         </label>
 
         <div className="wide">
@@ -64,23 +106,8 @@ function EditEvent() {
           </button>
         </div>
       </form>
-              onChange={handleChange}
-            />
-
-            <button className="btn btn-success w-100">
-              Update Event
-            </button>
-
-          </form>
-
-        </div>
-
-      </div>
-
-    </div>
-
+    </main>
   );
-
 }
 
 export default EditEvent;
