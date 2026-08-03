@@ -210,9 +210,15 @@ def create_app(config=None):
         return jsonify(event_schema.dump(new_event)), 201
 
     @app.route('/api/events/<int:event_id>', methods=['GET'])
+    @jwt_required(optional=True)
     def get_event(event_id):
         event = Event.query.get_or_404(event_id)
-        return jsonify(event_schema.dump(event)), 200
+        payload = event_schema.dump(event)
+        user_id = get_jwt_identity()
+        payload['is_registered'] = bool(
+            user_id and RSVP.query.filter_by(user_id=int(user_id), event_id=event.id).first()
+        )
+        return jsonify(payload), 200
 
     @app.route('/api/events/<int:event_id>', methods=['PATCH'])
     @jwt_required()
