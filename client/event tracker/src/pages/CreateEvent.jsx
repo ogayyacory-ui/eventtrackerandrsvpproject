@@ -36,7 +36,8 @@ function CreateEvent() {
   return (
     <main className="simple-page">
       <h1>Create Event</h1>
-
+      <p>Fill in the details below to publish your event and let attendees discover it quickly.</p>
+      
       <form className="event-form" onSubmit={handleSubmit}>
         <label>
           Title
@@ -84,6 +85,7 @@ function CreateEvent() {
           </button>
         </div>
       </form>
+      
     </main>
   );
 }
