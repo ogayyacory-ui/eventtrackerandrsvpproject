@@ -40,51 +40,16 @@ function CreateEvent() {
   };
 
   return (
-    <main
-      style={{
-        maxWidth: "900px",
-        margin: "40px auto",
-        padding: "20px",
-      }}
-    >
-      <div
-        style={{
-          background: "#ffffff",
-          borderRadius: "16px",
-          padding: "35px",
-          boxShadow: "0 10px 25px rgba(0,0,0,.08)",
-        }}
-      >
-        <h1
-          style={{
-            textAlign: "center",
-            color: "#1e293b",
-            marginBottom: "10px",
-          }}
-        >
-          Create Event
-        </h1>
+    <main className="info-page">
+      <div style={{ width: "min(900px, calc(100% - 48px))", margin: "40px auto" }}>
+        <div className="highlight-card">
+          <h1 style={{ textAlign: "center", color: "#1e293b", marginBottom: 10 }}>Create Event</h1>
 
-        <p
-          style={{
-            textAlign: "center",
-            color: "#64748b",
-            marginBottom: "35px",
-            lineHeight: "1.6",
-          }}
-        >
-          Fill in the details below to publish your event and let attendees
-          discover it quickly.
-        </p>
+          <p style={{ textAlign: "center", color: "#64748b", margin: "0 auto 20px", lineHeight: "1.6", maxWidth: 640 }}>
+            Fill in the details below to publish your event and let attendees discover it quickly.
+          </p>
 
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "20px",
-          }}
-        >
+          <form onSubmit={handleSubmit} className="contact-form" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
           <div>
             <label style={styles.label}>Title</label>
 
@@ -110,11 +75,7 @@ function CreateEvent() {
             />
           </div>
 
-          <div
-            style={{
-              gridColumn: "1 / -1",
-            }}
-          >
+          <div style={{ gridColumn: "1 / -1" }}>
             <label style={styles.label}>Description</label>
 
             <textarea
@@ -193,22 +154,11 @@ function CreateEvent() {
             />
           </div>
 
-          <div
-            style={{
-              gridColumn: "1 / -1",
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "15px",
-            }}
-          >
-            <button
-              type="submit"
-              style={styles.button}
-            >
-              Create Event
-            </button>
+          <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "center", marginTop: 8 }}>
+            <button type="submit">Create Event</button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
     </main>
   );

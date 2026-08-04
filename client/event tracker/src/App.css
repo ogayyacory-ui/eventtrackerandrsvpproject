@@ -344,6 +344,11 @@
 .info-values span { color: #d73da6; font-size: .75rem; font-weight: 900; letter-spacing: .1em; }
 .info-values h3 { margin: 8px 0; color: #30284c; }
 .info-values p { margin: 0; color: #716a83; line-height: 1.55; }
+.profile-item{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:12px}
+.profile-item strong{font-weight:600;color:#334155}
+.profile-item p{margin:0;color:#475569}
+.highlight-card{padding:30px;border-radius:16px;background:#fff;box-shadow:0 10px 25px rgba(0,0,0,.06)}
+.highlight-card h1,.highlight-card h2{color:#1e293b}
 .contact-layout { align-items: start; }
 .contact-details a { color: #5839bd; font-weight: 800; text-decoration: none; }
 .contact-form { display: flex; flex-direction: column; gap: 17px; padding: 30px; border-radius: 17px; background: #fff; box-shadow: 0 15px 35px rgba(54, 32, 112, .1); }

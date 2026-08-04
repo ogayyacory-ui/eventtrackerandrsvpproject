@@ -7,57 +7,20 @@ function Profile() {
   const displayEmail = user?.email || "Not available";
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#f5f7fb",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: "40px 20px",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "600px",
-          background: "#ffffff",
-          borderRadius: "16px",
-          padding: "35px",
-          boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
-        }}
-      >
-        <h2
-          style={{
-            textAlign: "center",
-            marginBottom: "25px",
-            color: "#1e293b",
-          }}
-        >
-          My Profile
-        </h2>
+    <main className="info-page">
+      <div style={{ width: "min(700px, calc(100% - 48px))", margin: "60px auto" }}>
+        <div className="highlight-card">
+          <h2 style={{ textAlign: "center", marginBottom: 18, color: "#1e293b" }}>My Profile</h2>
+          <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", marginBottom: 18 }} />
 
-        <hr
-          style={{
-            border: "none",
-            borderTop: "1px solid #e5e7eb",
-            marginBottom: "25px",
-          }}
-        />
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "18px",
-          }}
-        >
-          <ProfileItem label="Name" value={displayName} />
-          <ProfileItem label="Email" value={displayEmail} />
-          <ProfileItem label="Role" value={user?.role || "Not assigned"} />
+          <div>
+            <div className="profile-item"><strong>Name</strong><p>{displayName}</p></div>
+            <div className="profile-item"><strong>Email</strong><p>{displayEmail}</p></div>
+            <div className="profile-item"><strong>Role</strong><p>{user?.role || "Not assigned"}</p></div>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
