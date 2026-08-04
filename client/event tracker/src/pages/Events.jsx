@@ -29,59 +29,30 @@ function Events() {
   if (loading) return <Loader />;
 
   return (
-    <main
-      style={{
-        maxWidth: "1400px",
-        margin: "40px auto",
-        padding: "20px",
-      }}
-    >
-      <h1
-        style={{
-          textAlign: "center",
-          color: "#1e293b",
-          marginBottom: "40px",
-          fontSize: "2.5rem",
-          fontWeight: "700",
-        }}
-      >
-        Upcoming Events
-      </h1>
+    <main className="events-page">
+      <section className="events-hero">
+        <div className="events-hero-content">
+          <p className="section-kicker">Find your next experience</p>
+          <h1>Upcoming events</h1>
+          <p>Explore the people, ideas, and moments happening across your campus.</p>
+          <div className="events-search-panel">
+            <SearchBar value={search} onChange={(value) => { setSearch(value); setPage(1); }} />
+            <EventFilter category={category} setCategory={(value) => { setCategory(value); setPage(1); }} />
+          </div>
+        </div>
+      </section>
+      <section className="events-content">
+        <div className="events-heading">
+          <div><p className="section-kicker">Make plans</p><h2>Explore what’s on</h2></div>
+          <span>{events.length} event{events.length === 1 ? "" : "s"} found</span>
+        </div>
 
-      <div style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
-        <SearchBar value={search} onChange={(value) => { setSearch(value); setPage(1); }} />
-        <EventFilter category={category} setCategory={(value) => { setCategory(value); setPage(1); }} />
-      </div>
-
-      {error && <p role="alert" style={{ color: "#b91c1c" }}>{error}</p>}
+      {error && <p className="events-error" role="alert">{error}</p>}
 
       {!error && events.length === 0 ? (
-        <div
-          style={{
-            background: "#ffffff",
-            borderRadius: "16px",
-            padding: "50px",
-            textAlign: "center",
-            boxShadow: "0 8px 20px rgba(0,0,0,.08)",
-          }}
-        >
-          <h3
-            style={{
-              color: "#64748b",
-              margin: 0,
-            }}
-          >
-            No events available.
-          </h3>
-        </div>
+        <div className="events-empty"><h3>No events available yet.</h3><p>Try another search or check back soon for new campus experiences.</p></div>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: "30px",
-          }}
-        >
+        <div className="events-grid">
           {events.map((event) => (
             <EventCard
               key={event.id}
@@ -91,6 +62,7 @@ function Events() {
         </div>
       )}
       <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+      </section>
     </main>
   );
 }

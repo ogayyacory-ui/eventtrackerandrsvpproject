@@ -45,6 +45,14 @@ function Navbar() {
             Events
           </Link>
 
+          <Link to="/about" className="nav-link" onClick={closeMenu}>
+            About
+          </Link>
+
+          <Link to="/contact" className="nav-link" onClick={closeMenu}>
+            Contact
+          </Link>
+
           {user && (
             <>
               <Link

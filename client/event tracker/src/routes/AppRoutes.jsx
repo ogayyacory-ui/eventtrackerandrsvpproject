@@ -13,6 +13,8 @@ import EditEvent from "../pages/EditEvent";
 import ManageEvents from "../pages/ManageEvents";
 import Analytics from "../pages/Analytics";
 import Profile from "../pages/Profile";
+import About from "../pages/About";
+import Contact from "../pages/Contact";
 import NotFound from "../pages/NotFound";
 
 import ProtectedRoute from "../components/ProtectedRoute";
@@ -34,6 +36,8 @@ function AppRoutes() {
       <Route path="/events/:id" element={<EventDetails />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
 
       {/* Authenticated */}
 
