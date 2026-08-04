@@ -142,7 +142,7 @@ function ManageEvents() {
                     color: "#64748b",
                   }}
                 >
-                  📅 {event.date} &nbsp; | &nbsp; 📍 {event.location}
+                  {event.date} &nbsp; | &nbsp;  {event.location}
                 </p>
               </div>
 
