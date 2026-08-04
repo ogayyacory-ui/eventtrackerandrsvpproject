@@ -16,6 +16,7 @@ function CreateEvent() {
     capacity: "",
     image: "",
   });
+  const [notification, setNotification] = useState({ type: "", message: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,11 +32,11 @@ function CreateEvent() {
 
     try {
       await createEvent(form);
-      alert("Event created successfully.");
+      setNotification({ type: "success", message: "Event created successfully." });
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert(err.message || "Failed to create event.");
+      setNotification({ type: "error", message: err.message || "Failed to create event." });
     }
   };
 
@@ -48,6 +49,12 @@ function CreateEvent() {
           <p style={{ textAlign: "center", color: "#64748b", margin: "0 auto 20px", lineHeight: "1.6", maxWidth: 640 }}>
             Fill in the details below to publish your event and let attendees discover it quickly.
           </p>
+
+          {notification.message && (
+            <div className={`form-alert ${notification.type}`}>
+              {notification.message}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="contact-form" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
           <div>
