@@ -191,18 +191,19 @@ def create_app(config=None):
             return jsonify(validation_error), 400
 
         # Ensure organizer profile exists; create one from provided data if missing
-        if not user.organizer_profile:
-            profile = OrganizerProfile(
+        organizer_profile = user.organizer_profile
+        if not organizer_profile:
+            organizer_profile = OrganizerProfile(
                 user_id=user.id,
                 organization_name=data.get('organization_name', 'Organization'),
                 department=data.get('department', 'General')
             )
-            db.session.add(profile)
+            db.session.add(organizer_profile)
             db.session.commit()
 
         new_event = Event(
             **values,
-            organizer_id=user.organizer_profile.id
+            organizer_id=organizer_profile.id
         )
 
         if 'tag_ids' in data:
