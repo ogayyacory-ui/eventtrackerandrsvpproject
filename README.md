@@ -152,3 +152,12 @@ The auth service and event service utilities use this centralized API helper.
 ## Contact
 
 If you want to extend the portal, start with `app.py` for backend routes and `client/event tracker/src` for frontend pages and services.
+    
+
+   ## vercel link
+   https://vercel.com/ogayyacory-uis-projects/eventtrackerandrsvpproject
+
+
+   ## render link
+   https://eventtrackerandrsvpproject.onrender.com
+   
